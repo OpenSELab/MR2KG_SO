@@ -1,0 +1,1832 @@
+{
+ "nodes": [
+  {
+   "id": "34413",
+   "properties": {
+    "节点序号": 0,
+    "类型": "Question",
+    "out_degree": 28,
+    "in_degree": 0,
+    "body": "<p>I am getting a <code>NoClassDefFoundError</code> when I run my Java application.  What is typically the cause of this?</p>"
+   },
+   "isCenter": 1,
+   "labels": "34413"
+  },
+  {
+   "id": "34419",
+   "properties": {
+    "节点序号": 1,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>This is caused when there is a class file that your code depends on and it is present at compile time but not found at runtime. Look for differences in your build time and runtime  classpaths. </p>"
+   },
+   "isCenter": 0,
+   "labels": "34419"
+  },
+  {
+   "id": "34444",
+   "properties": {
+    "节点序号": 2,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I have found that sometimes I get a NoClassDefFound error when code is compiled with an incompatible version of the class found at runtime.  The specific instance I recall is with the apache axis library.  There were actually 2 versions on my runtime classpath and it was picking up the out of date and incompatible version and not the correct one, causing a NoClassDefFound error.  This was in a command line app where I was using a command similar to this.  </p><pre><code>set classpath=%classpath%;axis.jar</code></pre><p>I was able to get it to pick up the proper version by using:</p><pre><code>set classpath=axis.jar;%classpath%;</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "34444"
+  },
+  {
+   "id": "5756989",
+   "properties": {
+    "节点序号": 3,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 2,
+    "body": "<p>While it's possible that this is due to a classpath mismatch between compile-time and run-time, it's not necessarily true.</p><p>It is important to keep two or three different exceptions straight in our head in this case:</p><ol><li><p><strong><code>java.lang.ClassNotFoundException</code></strong>  This exception indicates that the class was not found on the classpath.  This indicates that we were trying to load the class definition, and the class did not exist on the classpath.</p></li><li><p><strong><code>java.lang.NoClassDefFoundError</code></strong>  This exception indicates that the JVM looked in its internal class definition data structure for the definition of a class and did not find it.  This is different than saying that it could not be loaded from the classpath.  Usually this indicates that we previously attempted to load a class from the classpath, but it failed for some reason - now we're trying to use the class again (and thus need to load it, since it failed last time), but we're not even going to try to load it, because we failed loading it earlier (and reasonably suspect that we would fail again).  The earlier failure could be a ClassNotFoundException or an ExceptionInInitializerError (indicating a failure in the static initialization block) or any number of other problems.  The point is, a NoClassDefFoundError is not necessarily a classpath problem.</p></li></ol>"
+   },
+   "isCenter": 0,
+   "labels": "5756989"
+  },
+  {
+   "id": "28507116",
+   "properties": {
+    "节点序号": 4,
+    "类型": "answer",
+    "out_degree": 1,
+    "in_degree": 1,
+    "body": "<p>Here is the code to illustrate <code>java.lang.NoClassDefFoundError</code>. Please see <a href=\"https://stackoverflow.com/a/5756989/1018906\">Jared's answer</a> for detailed explanation.</p><p><em>NoClassDefFoundErrorDemo.java</em></p><pre><code>public class NoClassDefFoundErrorDemo {    public static void main(String[] args) {        try {            // The following line would throw ExceptionInInitializerError            SimpleCalculator calculator1 = new SimpleCalculator();        } catch (Throwable t) {            System.out.println(t);        }        // The following line would cause NoClassDefFoundError        SimpleCalculator calculator2 = new SimpleCalculator();    }}</code></pre><p><em>SimpleCalculator.java</em></p><pre><code>public class SimpleCalculator {    static int undefined = 1 / 0;}</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "28507116"
+  },
+  {
+   "id": "31914707",
+   "properties": {
+    "节点序号": 5,
+    "类型": "answer",
+    "out_degree": 2,
+    "in_degree": 1,
+    "body": "<p>I was using <a href=\"http://en.wikipedia.org/wiki/Spring_Framework\" rel=\"nofollow noreferrer\">Spring Framework</a> with <a href=\"http://en.wikipedia.org/wiki/Apache_Maven\" rel=\"nofollow noreferrer\">Maven</a> and solved this error in my project.</p><p>There was a runtime error in the class. I was reading a property as integer, but when it read the value from the property file, its value was double.</p><p>Spring did not give me a full stack trace of on which line the runtime failed.It simply said <code>NoClassDefFoundError</code>. But when I executed it as a native Java application (taking it out of MVC), it gave <code>ExceptionInInitializerError</code> which was the true cause and which is how I traced the error.</p><p>@xli's answer gave me insight into what may be wrong in my code.</p>"
+   },
+   "isCenter": 0,
+   "labels": "31914707"
+  },
+  {
+   "id": "http://en.wikipedia.org/wiki/spring_framework",
+   "properties": {
+    "节点序号": 6,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I was using <a href=\"http://en.wikipedia.org/wiki/Spring_Framework\" rel=\"nofollow noreferrer\">Spring Framework</a> with <a href=\"http://en.wikipedia.org/wiki/Apache_Maven\" rel=\"nofollow noreferrer\">Maven</a> and solved this error in my project.</p><p>There was a runtime error in the class. I was reading a property as integer, but when it read the value from the property file, its value was double.</p><p>Spring did not give me a full stack trace of on which line the runtime failed.It simply said <code>NoClassDefFoundError</code>. But when I executed it as a native Java application (taking it out of MVC), it gave <code>ExceptionInInitializerError</code> which was the true cause and which is how I traced the error.</p><p>@xli's answer gave me insight into what may be wrong in my code.</p>"
+   },
+   "isCenter": 0,
+   "labels": "en.wikipedia.org"
+  },
+  {
+   "id": "http://en.wikipedia.org/wiki/apache_maven",
+   "properties": {
+    "节点序号": 7,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I was using <a href=\"http://en.wikipedia.org/wiki/Spring_Framework\" rel=\"nofollow noreferrer\">Spring Framework</a> with <a href=\"http://en.wikipedia.org/wiki/Apache_Maven\" rel=\"nofollow noreferrer\">Maven</a> and solved this error in my project.</p><p>There was a runtime error in the class. I was reading a property as integer, but when it read the value from the property file, its value was double.</p><p>Spring did not give me a full stack trace of on which line the runtime failed.It simply said <code>NoClassDefFoundError</code>. But when I executed it as a native Java application (taking it out of MVC), it gave <code>ExceptionInInitializerError</code> which was the true cause and which is how I traced the error.</p><p>@xli's answer gave me insight into what may be wrong in my code.</p>"
+   },
+   "isCenter": 0,
+   "labels": "en.wikipedia.org"
+  },
+  {
+   "id": "32479072",
+   "properties": {
+    "节点序号": 8,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I get NoClassFoundError when classes loaded by the runtime class loader cannot access classes already loaded by the java rootloader. Because the different class loaders are in different security domains (according to java) the jvm won't allow classes already loaded by the rootloader to be resolved in the runtime loader address space.</p><p>Run your program with 'java -javaagent:tracer.jar [YOUR java ARGS]'</p><p>It produces output showing the loaded class, and the loader env that loaded the class.  It's very helpful tracing why a class cannot be resolved.</p><pre><code>// ClassLoaderTracer.java// From: https://blogs.oracle.com/sundararajan/entry/tracing_class_loading_1_5import java.lang.instrument.*;import java.security.*;// manifest.mf// Premain-Class: ClassLoadTracer// jar -cvfm tracer.jar manifest.mf ClassLoaderTracer.class// java -javaagent:tracer.jar  [...]public class ClassLoadTracer {    public static void premain(String agentArgs, Instrumentation inst)     {        final java.io.PrintStream out = System.out;        inst.addTransformer(new ClassFileTransformer() {            public byte[] transform(ClassLoader loader, String className, Class classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) throws IllegalClassFormatException {                String pd = (null == protectionDomain) ? \"null\" : protectionDomain.getCodeSource().toString();                out.println(className + \" loaded by \" + loader + \" at \" + new java.util.Date() + \" in \" + pd);                // dump stack trace of the thread loading class                 Thread.dumpStack();                // we just want the original .class bytes to be loaded!                // we are not instrumenting it...                return null;            }        });    }}</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "32479072"
+  },
+  {
+   "id": "32593355",
+   "properties": {
+    "节点序号": 9,
+    "类型": "answer",
+    "out_degree": 4,
+    "in_degree": 1,
+    "body": "<p>This is the <a href=\"https://en.wikipedia.org/wiki/Classpath_%28Java%29#Setting_the_path_to_execute_Java_programs\" rel=\"noreferrer\">best solution</a> I found so far.</p><p>Suppose we have a package called <code>org.mypackage</code> containing the classes:</p><ul><li>HelloWorld (main class)  </li><li>SupportClass </li><li>UtilClass</li></ul><p>and the files defining this package are stored physically under the directory <code>D:\\myprogram</code> (on Windows) or <code>/home/user/myprogram</code> (on Linux).</p><p>The file structure will look like this:<a href=\"https://i.stack.imgur.com/XOzAE.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/XOzAE.png\" alt=\"enter image description here\"></a></p><p>When we invoke Java, we specify the name of the application to run: <code>org.mypackage.HelloWorld</code>. However we must also tell Java where to look for the files and directories defining our package. So to launch the program, we have to use the following command:<a href=\"https://i.stack.imgur.com/cM8gu.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/cM8gu.png\" alt=\"enter image description here\"></a></p>"
+   },
+   "isCenter": 0,
+   "labels": "32593355"
+  },
+  {
+   "id": "https://en.wikipedia.org/wiki/classpath_%28java%29#setting_the_path_to_execute_java_programs",
+   "properties": {
+    "节点序号": 10,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>This is the <a href=\"https://en.wikipedia.org/wiki/Classpath_%28Java%29#Setting_the_path_to_execute_Java_programs\" rel=\"noreferrer\">best solution</a> I found so far.</p><p>Suppose we have a package called <code>org.mypackage</code> containing the classes:</p><ul><li>HelloWorld (main class)  </li><li>SupportClass </li><li>UtilClass</li></ul><p>and the files defining this package are stored physically under the directory <code>D:\\myprogram</code> (on Windows) or <code>/home/user/myprogram</code> (on Linux).</p><p>The file structure will look like this:<a href=\"https://i.stack.imgur.com/XOzAE.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/XOzAE.png\" alt=\"enter image description here\"></a></p><p>When we invoke Java, we specify the name of the application to run: <code>org.mypackage.HelloWorld</code>. However we must also tell Java where to look for the files and directories defining our package. So to launch the program, we have to use the following command:<a href=\"https://i.stack.imgur.com/cM8gu.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/cM8gu.png\" alt=\"enter image description here\"></a></p>"
+   },
+   "isCenter": 0,
+   "labels": "en.wikipedia.org"
+  },
+  {
+   "id": "https://i.stack.imgur.com/xozae.png",
+   "properties": {
+    "节点序号": 11,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>This is the <a href=\"https://en.wikipedia.org/wiki/Classpath_%28Java%29#Setting_the_path_to_execute_Java_programs\" rel=\"noreferrer\">best solution</a> I found so far.</p><p>Suppose we have a package called <code>org.mypackage</code> containing the classes:</p><ul><li>HelloWorld (main class)  </li><li>SupportClass </li><li>UtilClass</li></ul><p>and the files defining this package are stored physically under the directory <code>D:\\myprogram</code> (on Windows) or <code>/home/user/myprogram</code> (on Linux).</p><p>The file structure will look like this:<a href=\"https://i.stack.imgur.com/XOzAE.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/XOzAE.png\" alt=\"enter image description here\"></a></p><p>When we invoke Java, we specify the name of the application to run: <code>org.mypackage.HelloWorld</code>. However we must also tell Java where to look for the files and directories defining our package. So to launch the program, we have to use the following command:<a href=\"https://i.stack.imgur.com/cM8gu.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/cM8gu.png\" alt=\"enter image description here\"></a></p>"
+   },
+   "isCenter": 0,
+   "labels": "i.stack.imgur.com"
+  },
+  {
+   "id": "https://i.stack.imgur.com/cm8gu.png",
+   "properties": {
+    "节点序号": 12,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 2,
+    "body": "<p>This is the <a href=\"https://en.wikipedia.org/wiki/Classpath_%28Java%29#Setting_the_path_to_execute_Java_programs\" rel=\"noreferrer\">best solution</a> I found so far.</p><p>Suppose we have a package called <code>org.mypackage</code> containing the classes:</p><ul><li>HelloWorld (main class)  </li><li>SupportClass </li><li>UtilClass</li></ul><p>and the files defining this package are stored physically under the directory <code>D:\\myprogram</code> (on Windows) or <code>/home/user/myprogram</code> (on Linux).</p><p>The file structure will look like this:<a href=\"https://i.stack.imgur.com/XOzAE.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/XOzAE.png\" alt=\"enter image description here\"></a></p><p>When we invoke Java, we specify the name of the application to run: <code>org.mypackage.HelloWorld</code>. However we must also tell Java where to look for the files and directories defining our package. So to launch the program, we have to use the following command:<a href=\"https://i.stack.imgur.com/cM8gu.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/cM8gu.png\" alt=\"enter image description here\"></a></p>"
+   },
+   "isCenter": 0,
+   "labels": "i.stack.imgur.com"
+  },
+  {
+   "id": "https://i.stack.imgur.com/cm8gu.png",
+   "properties": {
+    "节点序号": 13,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 2,
+    "body": "<p>This is the <a href=\"https://en.wikipedia.org/wiki/Classpath_%28Java%29#Setting_the_path_to_execute_Java_programs\" rel=\"noreferrer\">best solution</a> I found so far.</p><p>Suppose we have a package called <code>org.mypackage</code> containing the classes:</p><ul><li>HelloWorld (main class)  </li><li>SupportClass </li><li>UtilClass</li></ul><p>and the files defining this package are stored physically under the directory <code>D:\\myprogram</code> (on Windows) or <code>/home/user/myprogram</code> (on Linux).</p><p>The file structure will look like this:<a href=\"https://i.stack.imgur.com/XOzAE.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/XOzAE.png\" alt=\"enter image description here\"></a></p><p>When we invoke Java, we specify the name of the application to run: <code>org.mypackage.HelloWorld</code>. However we must also tell Java where to look for the files and directories defining our package. So to launch the program, we have to use the following command:<a href=\"https://i.stack.imgur.com/cM8gu.png\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/cM8gu.png\" alt=\"enter image description here\"></a></p>"
+   },
+   "isCenter": 0,
+   "labels": "i.stack.imgur.com"
+  },
+  {
+   "id": "33122745",
+   "properties": {
+    "节点序号": 14,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I got this message after removing two files from the SRC library, and when I brought them back I kept seeing this error message.</p><p>My solution was: Restart Eclipse. Since then I haven't seen this message again :-)</p>"
+   },
+   "isCenter": 0,
+   "labels": "33122745"
+  },
+  {
+   "id": "36870883",
+   "properties": {
+    "节点序号": 15,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Make sure this matches in the <code>module:app</code> and <code>module:lib</code>:</p><pre><code>android {    compileSdkVersion 23    buildToolsVersion '22.0.1'    packagingOptions {    }    defaultConfig {        minSdkVersion 17        targetSdkVersion 23        versionCode 11        versionName \"2.1\"    }</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "36870883"
+  },
+  {
+   "id": "38383004",
+   "properties": {
+    "节点序号": 16,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I had the same problem, and I was stock for many hours.</p><p>I found the solution. In my case, there was the static method defined due to that. The JVM can not create the another object of that class.</p><p>For example,</p><pre><code>private static HttpHost proxy = new HttpHost(proxyHost, Integer.valueOf(proxyPort), \"http\");</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "38383004"
+  },
+  {
+   "id": "38614741",
+   "properties": {
+    "节点序号": 17,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>The technique below helped me many times:</p><pre><code>System.out.println(TheNoDefFoundClass.class.getProtectionDomain().getCodeSource().getLocation());</code></pre><p>where the TheNoDefFoundClass is the class that might be \"lost\" due to a preference for an older version of the same library used by your program. This most frequently happens with the cases, when the client software is being deployed into a dominant container, armed with its own classloaders and tons of ancient versions of most popular libs.</p>"
+   },
+   "isCenter": 0,
+   "labels": "38614741"
+  },
+  {
+   "id": "38879739",
+   "properties": {
+    "节点序号": 18,
+    "类型": "answer",
+    "out_degree": 3,
+    "in_degree": 1,
+    "body": "<p><strong><em>NoClassDefFoundError In Java</em></strong></p><p><strong>Definition:</strong> </p><ol><li><p>Java Virtual Machine is not able to find a particular class at runtime which was available at compile time.</p></li><li><p>If a class was present during compile time but not available in java classpath during runtime.</p></li></ol><p><a href=\"https://i.stack.imgur.com/bDVNo.gif\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/bDVNo.gif\" alt=\"enter image description here\"></a></p><p><strong>Examples:</strong></p><ol><li>The class is not in Classpath, there is no sure shot way of knowing it but many times you can just have a look to print System.getproperty(\"java.classpath\") and it will print the classpath from there you can at least get an idea of your actual runtime classpath.</li><li><p>A simple example of NoClassDefFoundError is class belongs to a missing JAR file or JAR was not added into classpath or sometimes jar's name has been changed by someone like in my case one of my colleagues has changed tibco.jar into tibco_v3.jar and the program is failing with java.lang.NoClassDefFoundError and I were wondering what's wrong.</p></li><li><p>Just try to run with explicitly -classpath option with the classpath you think will work and if it's working then it's a sure short sign that someone is overriding java classpath.</p></li><li>Permission issue on JAR file can also cause NoClassDefFoundError in Java.</li><li>Typo on XML Configuration can also cause NoClassDefFoundError in Java.</li><li>when your compiled class which is defined in a package, doesn’t present in the same package while loading like in the case of JApplet it will throw NoClassDefFoundError in Java.</li></ol><p><strong>Possible Solutions:</strong></p><ol><li>The class is not available in Java Classpath.</li><li>If you are working in J2EE environment than the visibility of Class among multiple Classloader can also cause java.lang.NoClassDefFoundError, see examples and scenario section for detailed discussion.</li><li>Check for java.lang.ExceptionInInitializerError in your log file. NoClassDefFoundError due to the failure of static initialization is quite common.</li><li>Because NoClassDefFoundError is a subclass of java.lang.LinkageError it can also come if one of it dependency like native library may not available.</li><li>Any start-up script is overriding Classpath environment variable.</li><li>You might be running your program using jar command and class was not defined in manifest file's ClassPath attribute.</li></ol><p>Resources:</p><p><a href=\"https://javarevisited.blogspot.com/2011/06/noclassdeffounderror-exception-in.html\" rel=\"noreferrer\">3 ways to solve NoClassDefFoundError</a></p><p><a href=\"http://javaeesupportpatterns.blogspot.in/2011/08/javalangnoclassdeffounderror-problem.html\" rel=\"noreferrer\">java.lang.NoClassDefFoundError Problem patterns</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "38879739"
+  },
+  {
+   "id": "https://i.stack.imgur.com/bdvno.gif",
+   "properties": {
+    "节点序号": 19,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p><strong><em>NoClassDefFoundError In Java</em></strong></p><p><strong>Definition:</strong> </p><ol><li><p>Java Virtual Machine is not able to find a particular class at runtime which was available at compile time.</p></li><li><p>If a class was present during compile time but not available in java classpath during runtime.</p></li></ol><p><a href=\"https://i.stack.imgur.com/bDVNo.gif\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/bDVNo.gif\" alt=\"enter image description here\"></a></p><p><strong>Examples:</strong></p><ol><li>The class is not in Classpath, there is no sure shot way of knowing it but many times you can just have a look to print System.getproperty(\"java.classpath\") and it will print the classpath from there you can at least get an idea of your actual runtime classpath.</li><li><p>A simple example of NoClassDefFoundError is class belongs to a missing JAR file or JAR was not added into classpath or sometimes jar's name has been changed by someone like in my case one of my colleagues has changed tibco.jar into tibco_v3.jar and the program is failing with java.lang.NoClassDefFoundError and I were wondering what's wrong.</p></li><li><p>Just try to run with explicitly -classpath option with the classpath you think will work and if it's working then it's a sure short sign that someone is overriding java classpath.</p></li><li>Permission issue on JAR file can also cause NoClassDefFoundError in Java.</li><li>Typo on XML Configuration can also cause NoClassDefFoundError in Java.</li><li>when your compiled class which is defined in a package, doesn’t present in the same package while loading like in the case of JApplet it will throw NoClassDefFoundError in Java.</li></ol><p><strong>Possible Solutions:</strong></p><ol><li>The class is not available in Java Classpath.</li><li>If you are working in J2EE environment than the visibility of Class among multiple Classloader can also cause java.lang.NoClassDefFoundError, see examples and scenario section for detailed discussion.</li><li>Check for java.lang.ExceptionInInitializerError in your log file. NoClassDefFoundError due to the failure of static initialization is quite common.</li><li>Because NoClassDefFoundError is a subclass of java.lang.LinkageError it can also come if one of it dependency like native library may not available.</li><li>Any start-up script is overriding Classpath environment variable.</li><li>You might be running your program using jar command and class was not defined in manifest file's ClassPath attribute.</li></ol><p>Resources:</p><p><a href=\"https://javarevisited.blogspot.com/2011/06/noclassdeffounderror-exception-in.html\" rel=\"noreferrer\">3 ways to solve NoClassDefFoundError</a></p><p><a href=\"http://javaeesupportpatterns.blogspot.in/2011/08/javalangnoclassdeffounderror-problem.html\" rel=\"noreferrer\">java.lang.NoClassDefFoundError Problem patterns</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "i.stack.imgur.com"
+  },
+  {
+   "id": "https://javarevisited.blogspot.com/2011/06/noclassdeffounderror-exception-in.html",
+   "properties": {
+    "节点序号": 20,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p><strong><em>NoClassDefFoundError In Java</em></strong></p><p><strong>Definition:</strong> </p><ol><li><p>Java Virtual Machine is not able to find a particular class at runtime which was available at compile time.</p></li><li><p>If a class was present during compile time but not available in java classpath during runtime.</p></li></ol><p><a href=\"https://i.stack.imgur.com/bDVNo.gif\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/bDVNo.gif\" alt=\"enter image description here\"></a></p><p><strong>Examples:</strong></p><ol><li>The class is not in Classpath, there is no sure shot way of knowing it but many times you can just have a look to print System.getproperty(\"java.classpath\") and it will print the classpath from there you can at least get an idea of your actual runtime classpath.</li><li><p>A simple example of NoClassDefFoundError is class belongs to a missing JAR file or JAR was not added into classpath or sometimes jar's name has been changed by someone like in my case one of my colleagues has changed tibco.jar into tibco_v3.jar and the program is failing with java.lang.NoClassDefFoundError and I were wondering what's wrong.</p></li><li><p>Just try to run with explicitly -classpath option with the classpath you think will work and if it's working then it's a sure short sign that someone is overriding java classpath.</p></li><li>Permission issue on JAR file can also cause NoClassDefFoundError in Java.</li><li>Typo on XML Configuration can also cause NoClassDefFoundError in Java.</li><li>when your compiled class which is defined in a package, doesn’t present in the same package while loading like in the case of JApplet it will throw NoClassDefFoundError in Java.</li></ol><p><strong>Possible Solutions:</strong></p><ol><li>The class is not available in Java Classpath.</li><li>If you are working in J2EE environment than the visibility of Class among multiple Classloader can also cause java.lang.NoClassDefFoundError, see examples and scenario section for detailed discussion.</li><li>Check for java.lang.ExceptionInInitializerError in your log file. NoClassDefFoundError due to the failure of static initialization is quite common.</li><li>Because NoClassDefFoundError is a subclass of java.lang.LinkageError it can also come if one of it dependency like native library may not available.</li><li>Any start-up script is overriding Classpath environment variable.</li><li>You might be running your program using jar command and class was not defined in manifest file's ClassPath attribute.</li></ol><p>Resources:</p><p><a href=\"https://javarevisited.blogspot.com/2011/06/noclassdeffounderror-exception-in.html\" rel=\"noreferrer\">3 ways to solve NoClassDefFoundError</a></p><p><a href=\"http://javaeesupportpatterns.blogspot.in/2011/08/javalangnoclassdeffounderror-problem.html\" rel=\"noreferrer\">java.lang.NoClassDefFoundError Problem patterns</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "javarevisited.blogspot.com"
+  },
+  {
+   "id": "http://javaeesupportpatterns.blogspot.in/2011/08/javalangnoclassdeffounderror-problem.html",
+   "properties": {
+    "节点序号": 21,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p><strong><em>NoClassDefFoundError In Java</em></strong></p><p><strong>Definition:</strong> </p><ol><li><p>Java Virtual Machine is not able to find a particular class at runtime which was available at compile time.</p></li><li><p>If a class was present during compile time but not available in java classpath during runtime.</p></li></ol><p><a href=\"https://i.stack.imgur.com/bDVNo.gif\" rel=\"noreferrer\"><img src=\"https://i.stack.imgur.com/bDVNo.gif\" alt=\"enter image description here\"></a></p><p><strong>Examples:</strong></p><ol><li>The class is not in Classpath, there is no sure shot way of knowing it but many times you can just have a look to print System.getproperty(\"java.classpath\") and it will print the classpath from there you can at least get an idea of your actual runtime classpath.</li><li><p>A simple example of NoClassDefFoundError is class belongs to a missing JAR file or JAR was not added into classpath or sometimes jar's name has been changed by someone like in my case one of my colleagues has changed tibco.jar into tibco_v3.jar and the program is failing with java.lang.NoClassDefFoundError and I were wondering what's wrong.</p></li><li><p>Just try to run with explicitly -classpath option with the classpath you think will work and if it's working then it's a sure short sign that someone is overriding java classpath.</p></li><li>Permission issue on JAR file can also cause NoClassDefFoundError in Java.</li><li>Typo on XML Configuration can also cause NoClassDefFoundError in Java.</li><li>when your compiled class which is defined in a package, doesn’t present in the same package while loading like in the case of JApplet it will throw NoClassDefFoundError in Java.</li></ol><p><strong>Possible Solutions:</strong></p><ol><li>The class is not available in Java Classpath.</li><li>If you are working in J2EE environment than the visibility of Class among multiple Classloader can also cause java.lang.NoClassDefFoundError, see examples and scenario section for detailed discussion.</li><li>Check for java.lang.ExceptionInInitializerError in your log file. NoClassDefFoundError due to the failure of static initialization is quite common.</li><li>Because NoClassDefFoundError is a subclass of java.lang.LinkageError it can also come if one of it dependency like native library may not available.</li><li>Any start-up script is overriding Classpath environment variable.</li><li>You might be running your program using jar command and class was not defined in manifest file's ClassPath attribute.</li></ol><p>Resources:</p><p><a href=\"https://javarevisited.blogspot.com/2011/06/noclassdeffounderror-exception-in.html\" rel=\"noreferrer\">3 ways to solve NoClassDefFoundError</a></p><p><a href=\"http://javaeesupportpatterns.blogspot.in/2011/08/javalangnoclassdeffounderror-problem.html\" rel=\"noreferrer\">java.lang.NoClassDefFoundError Problem patterns</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "javaeesupportpatterns.blogspot.in"
+  },
+  {
+   "id": "40467093",
+   "properties": {
+    "节点序号": 22,
+    "类型": "answer",
+    "out_degree": 1,
+    "in_degree": 1,
+    "body": "<p>In case you have generated-code (EMF, etc.) there can be too many static initialisers which consume all stack space. </p><p>See Stack&nbsp;Overflow question <em><a href=\"https://stackoverflow.com/questions/3700459/how-to-increase-the-java-stack-size\">How to increase the Java stack size?</a></em>.</p>"
+   },
+   "isCenter": 0,
+   "labels": "40467093"
+  },
+  {
+   "id": "44632379",
+   "properties": {
+    "节点序号": 23,
+    "类型": "answer",
+    "out_degree": 1,
+    "in_degree": 1,
+    "body": "<p>If someone comes here because of <code>java.lang.NoClassDefFoundError: org/apache/log4j/Logger</code> error, in my case it was produced because I used log4j 2 (but I didn't add all the files that come with it), and some dependency library used log4j 1. The solution was to add the Log4j 1.x bridge: the jar <code>log4j-1.2-api-&lt;version&gt;.jar</code> which comes with log4j 2. More info in the log4j 2 <a href=\"https://logging.apache.org/log4j/2.x/manual/migration.html\" rel=\"nofollow noreferrer\">migration</a>.</p>"
+   },
+   "isCenter": 0,
+   "labels": "44632379"
+  },
+  {
+   "id": "https://logging.apache.org/log4j/2.x/manual/migration.html",
+   "properties": {
+    "节点序号": 24,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>If someone comes here because of <code>java.lang.NoClassDefFoundError: org/apache/log4j/Logger</code> error, in my case it was produced because I used log4j 2 (but I didn't add all the files that come with it), and some dependency library used log4j 1. The solution was to add the Log4j 1.x bridge: the jar <code>log4j-1.2-api-&lt;version&gt;.jar</code> which comes with log4j 2. More info in the log4j 2 <a href=\"https://logging.apache.org/log4j/2.x/manual/migration.html\" rel=\"nofollow noreferrer\">migration</a>.</p>"
+   },
+   "isCenter": 0,
+   "labels": "logging.apache.org"
+  },
+  {
+   "id": "46925897",
+   "properties": {
+    "节点序号": 25,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<h2>Two different checkout copies of the same project</h2><p>In my case, the problem was Eclipse's inability to differentiate between two different copies of the same project. I have one locked on trunk (SVN version control) and the other one working in one branch at a time. I tried out one change in the working copy as a JUnit test case, which included extracting a private inner class to be a public class on its own and while it was working, I open the other copy of the project to look around at some other part of the code that needed changes. At some point, the <code>NoClassDefFoundError</code> popped up complaining that the private inner class was not there; double-clicking in the stack trace brought me to the source file in the wrong project copy.</p><p>Closing the trunk copy of the project and running the test case again got rid of the problem.</p>"
+   },
+   "isCenter": 0,
+   "labels": "46925897"
+  },
+  {
+   "id": "47553351",
+   "properties": {
+    "节点序号": 26,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Java was unable to find the class A in runtime. Class A was in maven project ArtClient from a different workspace.So I imported ArtClient to my Eclipse project. Two of my projects was using ArtClient as dependency.I changed library reference to project reference for these ones (Build Path -> Configure Build Path).</p><p>And the problem gone away. </p>"
+   },
+   "isCenter": 0,
+   "labels": "47553351"
+  },
+  {
+   "id": "48615116",
+   "properties": {
+    "节点序号": 27,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I fixed my problem by disabling the preDexLibraries for all modules:</p><pre><code>dexOptions {        preDexLibraries false        ...</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "48615116"
+  },
+  {
+   "id": "49601683",
+   "properties": {
+    "节点序号": 28,
+    "类型": "answer",
+    "out_degree": 1,
+    "in_degree": 1,
+    "body": "<p>This error can be caused by unchecked <strong>Java version</strong> requirements.</p><p>In my case I was able to resolve this error, while building a high-profile open-source project, by switching from Java 9 to Java 8 using <a href=\"http://sdkman.io/\" rel=\"nofollow noreferrer\">SDKMAN!</a>.</p><pre><code>sdk list javasdk install java 8u152-zulusdk use java 8u152-zulu</code></pre><p>Then doing a clean install as described below.</p><hr><p>When using <strong>Maven</strong> as your build tool, it is sometimes helpful -- and usually gratifying, to do a <em>clean</em> 'install' build <strong>with testing disabled</strong>.</p><pre><code>mvn clean install -DskipTests</code></pre><p>Now that <em>everything</em> has been built and installed, you can go ahead and run the tests.</p><pre><code>mvn test</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "49601683"
+  },
+  {
+   "id": "http://sdkman.io/",
+   "properties": {
+    "节点序号": 29,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>This error can be caused by unchecked <strong>Java version</strong> requirements.</p><p>In my case I was able to resolve this error, while building a high-profile open-source project, by switching from Java 9 to Java 8 using <a href=\"http://sdkman.io/\" rel=\"nofollow noreferrer\">SDKMAN!</a>.</p><pre><code>sdk list javasdk install java 8u152-zulusdk use java 8u152-zulu</code></pre><p>Then doing a clean install as described below.</p><hr><p>When using <strong>Maven</strong> as your build tool, it is sometimes helpful -- and usually gratifying, to do a <em>clean</em> 'install' build <strong>with testing disabled</strong>.</p><pre><code>mvn clean install -DskipTests</code></pre><p>Now that <em>everything</em> has been built and installed, you can go ahead and run the tests.</p><pre><code>mvn test</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "sdkman.io"
+  },
+  {
+   "id": "52544691",
+   "properties": {
+    "节点序号": 30,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p><code>NoClassDefFoundError</code> can also occur when a <strong>static</strong> initializer tries to load a resource bundle that is not available in runtime, for example a properties file that the affected class tries to load from the <code>META-INF</code> directory, but isn’t there. If you don’t catch <code>NoClassDefFoundError</code>, sometimes you won’t be able to see the full stack trace; to overcome this you can temporarily use a <code>catch</code> clause for <code>Throwable</code>:</p><pre><code>try {    // Statement(s) that cause(s) the affected class to be loaded} catch (Throwable t) {    Logger.getLogger(&quot;&lt;logger-name&gt;&quot;).info(&quot;Loading my class went wrong&quot;, t);}</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "52544691"
+  },
+  {
+   "id": "53616950",
+   "properties": {
+    "节点序号": 31,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>One interesting case in which you might see a lot of <code>NoClassDefFoundErrors</code> is when you:</p><ol><li><code>throw</code> a <code>RuntimeException</code> in the <code>static</code> block of your class <code>Example</code></li><li>Intercept it (or if it just doesn't matter like it is thrown in a <strong>test case</strong>)</li><li>Try to create an instance of this class <code>Example</code></li></ol><p></p><pre><code>static class Example {    static {        thisThrowsRuntimeException();    }}static class OuterClazz {    OuterClazz() {        try {            new Example();        } catch (Throwable ignored) { //simulating catching RuntimeException from static block            // DO NOT DO THIS IN PRODUCTION CODE, THIS IS JUST AN EXAMPLE in StackOverflow        }        new Example(); //this throws NoClassDefFoundError    }}</code></pre><p><code>NoClassDefError</code> will be thrown accompanied with <code>ExceptionInInitializerError</code> from the static block <code>RuntimeException</code>.</p><hr><p>This is especially important case when you see <code>NoClassDefFoundErrors</code> in your <strong>UNIT TESTS</strong>.</p><p>In a way you're \"sharing\" the <code>static</code> block execution between tests, but the initial <code>ExceptionInInitializerError</code> will be just in one test case. The first one that uses the problematic <code>Example</code> class. Other test cases that use the <code>Example</code> class will just throw <code>NoClassDefFoundErrors</code>.</p>"
+   },
+   "isCenter": 0,
+   "labels": "53616950"
+  },
+  {
+   "id": "55504952",
+   "properties": {
+    "节点序号": 32,
+    "类型": "answer",
+    "out_degree": 1,
+    "in_degree": 1,
+    "body": "<p>I got NoClassDefFound errors when I didn't export a class on the \"Order and Export\" tab in the Java Build Path of my project.  Make sure to put a checkmark in the \"Order and Export\" tab of any dependencies you add to the project's build path.  See <a href=\"https://stackoverflow.com/questions/8884818/eclipse-warning-xxxxxxxxxxx-jar-will-not-be-exported-or-published-runtime-clas\">Eclipse warning: XXXXXXXXXXX.jar will not be exported or published. Runtime ClassNotFoundExceptions may result</a>.</p>"
+   },
+   "isCenter": 0,
+   "labels": "55504952"
+  },
+  {
+   "id": "57379534",
+   "properties": {
+    "节点序号": 33,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>It could also be because you copy the code file from an IDE with a certain package name and you want to try to run it using terminal. You will have to remove the package name from the code first.This happens to me.</p>"
+   },
+   "isCenter": 0,
+   "labels": "57379534"
+  },
+  {
+   "id": "58654225",
+   "properties": {
+    "节点序号": 34,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I got this error when I add  Maven dependency of another module to my project, the issue was finally solved by add <code>-Xss2m</code> to my program's JVM option(It's one megabyte by default since JDK5.0). It's believed the program does not have enough stack to load class.</p>"
+   },
+   "isCenter": 0,
+   "labels": "58654225"
+  },
+  {
+   "id": "60383482",
+   "properties": {
+    "节点序号": 35,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>In my case I was getting this error due to a mismatch in the JDK versions. When I tried to run the application from Intelij it wasn't working but then running it from the command line worked. This is because Intelij was attempting to run it with the Java 11 JDK that was setup but on the command line it was running with the Java 8 JDK. After switching that setting under File > Project Structure > Project Settings > Project SDK, it worked for me.</p>"
+   },
+   "isCenter": 0,
+   "labels": "60383482"
+  },
+  {
+   "id": "60467618",
+   "properties": {
+    "节点序号": 36,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Everyone talks here about some Java configuration stuff, JVM problems etc., in my case the error was not related to these topics at all and had a very trivial and easy to solve reason: I had a wrong annotation at my endpoint in my Controller (Spring Boot application). </p>"
+   },
+   "isCenter": 0,
+   "labels": "60467618"
+  },
+  {
+   "id": "61825298",
+   "properties": {
+    "节点序号": 37,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I have had an interesting issue wiht NoClassDefFoundError in JavaEE working with Liberty server.  I was using IMS resource adapters and my server.xml had already resource adapter for imsudbJXA.rar.When I added new adapter for imsudbXA.rar, I would start getting this error for instance objects for DLIException, IMSConnectionSpec or SQLInteractionSpec.I could not figure why but I resolved it by creating new server.xml for my work using only imsudbXA.rar.  I am sure using multiple resource adapters in server.xml is fine, I just had no time to look into that.</p>"
+   },
+   "isCenter": 0,
+   "labels": "61825298"
+  },
+  {
+   "id": "63427546",
+   "properties": {
+    "节点序号": 38,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Update [https://www.infoq.com/articles/single-file-execution-java11/]:</p><blockquote><p>In Java SE 11, you get the option to launch a single source code filedirectly, without intermediate compilation. Just for your convenience,so that newbies like you don't have to run javac + java (of course,leaving them confused why that is).</p></blockquote>"
+   },
+   "isCenter": 0,
+   "labels": "63427546"
+  },
+  {
+   "id": "64129484",
+   "properties": {
+    "节点序号": 39,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I had this error but could not figure out the solution based on this thread but solved it myself.</p><p>For my problem I was compiling this code:</p><pre><code>package valentines;import java.math.BigInteger;import java.util.ArrayList;public class StudentSolver {    public static ArrayList&lt;Boolean&gt; solve(ArrayList&lt;ArrayList&lt;BigInteger&gt;&gt; problems) {        //DOING WORK HERE            }    public static void main(String[] args){        //TESTING SOLVE FUNCTION    }    }</code></pre><p>I was then compiling this code in a folder structure that was like /ProjectName/valentinesCompiling it worked fine but trying to execute: <code>java StudentSolver</code></p><p>I was getting the NoClassDefError.</p><p>To fix this I simply removed: <code>package valentines;</code></p><p>I'm not very well versed in java packages and such but this how I fixed my error so sorry if this was already answered by someone else but I couldn't interpret it to my problem.</p>"
+   },
+   "isCenter": 0,
+   "labels": "64129484"
+  },
+  {
+   "id": "3700459",
+   "properties": {
+    "节点序号": 40,
+    "类型": "Question",
+    "out_degree": 9,
+    "in_degree": 1,
+    "body": "<p>I asked this question to get to know how to increase the runtime call stack size in the JVM. I've got an answer to this, and I've also got many useful answers and comments relevant to how Java handles the situation where a large runtime stack is needed. I've extended my question with the summary of the responses.</p><p>Originally I wanted to increase the JVM stack size so programs like runs without a <code>StackOverflowError</code>.</p><pre><code>public class TT {  public static long fact(int n) {    return n &lt; 2 ? 1 : n * fact(n - 1);  }  public static void main(String[] args) {    System.out.println(fact(1 &lt;&lt; 15));  }}</code></pre><p>The corresponding configuration setting is the <code>java -Xss...</code> command-line flag with a large enough value. For the program <code>TT</code> above, it works like this with OpenJDK's JVM:</p><pre><code>$ javac TT.java$ java -Xss4m TT</code></pre><p>One of the answers has also pointed out that the <code>-X...</code> flags are implementation dependent. I was using</p><pre><code>java version \"1.6.0_18\"OpenJDK Runtime Environment (IcedTea6 1.8.1) (6b18-1.8.1-0ubuntu1~8.04.3)OpenJDK 64-Bit Server VM (build 16.0-b13, mixed mode)</code></pre><p>It is also possible to specify a large stack only for one thread (see in one of the answers how). This is recommended over <code>java -Xss...</code> to avoid wasting memory for threads that don't need it.</p><p>I was curious how large a stack the program above exactly needs, so I've run it <code>n</code> increased:</p><ul><li>-Xss4m can be enough for <code>fact(1 &lt;&lt; 15)</code></li><li>-Xss5m can be enough for <code>fact(1 &lt;&lt; 17)</code></li><li>-Xss7m can be enough for <code>fact(1 &lt;&lt; 18)</code></li><li>-Xss9m can be enough for <code>fact(1 &lt;&lt; 19)</code></li><li>-Xss18m can be enough for <code>fact(1 &lt;&lt; 20)</code></li><li>-Xss35m can be enough for <code>fact(1 &lt;&lt; 21)</code></li><li>-Xss68m can be enough for <code>fact(1 &lt;&lt; 22)</code></li><li>-Xss129m can be enough for <code>fact(1 &lt;&lt; 23)</code></li><li>-Xss258m can be enough for <code>fact(1 &lt;&lt; 24)</code></li><li>-Xss515m can be enough for <code>fact(1 &lt;&lt; 25)</code></li></ul><p>From the numbers above it seems that Java is using about 16 bytes per stack frame for the function above, which is reasonable.</p><p>The enumeration above contains <em>can be enough</em> instead of <em>is enough</em>, because the stack requirement is not deterministic: running it multiple times with the same source file and the same <code>-Xss...</code> sometimes succeeds and sometimes yields a <code>StackOverflowError</code>. E.g. for 1 &lt;&lt; 20, <code>-Xss18m</code> was enough in 7 runs out of 10, and <code>-Xss19m</code> wasn't always enough either, but <code>-Xss20m</code> was enough (in all 100 runs out of 100). Does garbage collection, the JIT kicking in, or something else cause this nondeterministic behavior?</p><p>The stack trace printed at a <code>StackOverflowError</code> (and possibly at other exceptions as well) shows only the most recent 1024 elements of the runtime stack. An answer below demonstrates how to count the exact depth reached (which might be a lot larger than 1024).</p><p>Many people who responded has pointed out that it is a good and safe coding practice to consider alternative, less stack-hungry implementations of the same algorithm. In general, it is possible to convert to a set of recursive functions to iterative functions (using a e.g. <code>Stack</code> object, which gets populated on the heap instead of on the runtime stack). For this particular <code>fact</code> function, it is quite easy to convert it. My iterative version would look like:</p><pre><code>public class TTIterative {  public static long fact(int n) {    if (n &lt; 2) return 1;    if (n &gt; 65) return 0;  // Enough powers of 2 in the product to make it (long)0.    long f = 2;    for (int i = 3; i &lt;= n; ++i) {      f *= i;    }    return f;  }  public static void main(String[] args) {    System.out.println(fact(1 &lt;&lt; 15));  }}</code></pre><p>FYI, as the iterative solution above shows it, the <code>fact</code> function cannot compute the exact factorial of numbers above 65 (actually, even above 20), because the Java built-in type <code>long</code> would overflow. Refactoring <code>fact</code> so it would return a <code>BigInteger</code> instead of <code>long</code> would yield exact results for large inputs as well.</p>"
+   },
+   "isCenter": 0,
+   "labels": "3700459"
+  },
+  {
+   "id": "3700576",
+   "properties": {
+    "节点序号": 41,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Hmm... it works for me and with far less than 999MB of stack:</p><pre><code>&gt; java -Xss4m Test0</code></pre><p>(Windows JDK 7, build 17.0-b05 client VM, and Linux JDK 6 - same version information as you posted)</p>"
+   },
+   "isCenter": 0,
+   "labels": "3700576"
+  },
+  {
+   "id": "3701218",
+   "properties": {
+    "节点序号": 42,
+    "类型": "answer",
+    "out_degree": 1,
+    "in_degree": 1,
+    "body": "<p>If you want to play with the thread stack size, you'll want to look at the -Xss option on the Hotspot JVM.  It may be something different on non Hotspot VM's since the -X parameters to the JVM are distribution specific, IIRC.</p><p>On Hotspot, this looks like <code>java -Xss16M</code> if you want to make the size 16 megs.</p><p>Type <code>java -X -help</code> if you want to see all of the distribution specific JVM parameters you can pass in.  I am not sure if this works the same on other JVMs, but it prints all of Hotspot specific parameters.</p><p>For what it's worth - I would recommend limiting your use of recursive methods in Java.  It's not too great at optimizing them - for one the JVM doesn't support tail recursion (see <a href=\"https://stackoverflow.com/questions/105834/does-the-jvm-prevent-tail-call-optimizations\">Does the JVM prevent tail call optimizations?</a>).  Try refactoring your factorial code above to use a while loop instead of recursive method calls. </p>"
+   },
+   "isCenter": 0,
+   "labels": "3701218"
+  },
+  {
+   "id": "3716031",
+   "properties": {
+    "节点序号": 43,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I assume you calculated the \"depth of 1024\" by the recurring lines in the stack trace?</p><p>Obviously, the stack trace array length in Throwable seems to be limited to 1024.Try the following program:</p><pre><code>public class Test {    public static void main(String[] args) {        try {            System.out.println(fact(1 &lt;&lt; 15));        }        catch (StackOverflowError e) {            System.err.println(\"true recursion level was \" + level);            System.err.println(\"reported recursion level was \" +                               e.getStackTrace().length);        }    }    private static int level = 0;    public static long fact(int n) {        level++;        return n &lt; 2 ? n : n * fact(n - 1);    }}</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "3716031"
+  },
+  {
+   "id": "3718555",
+   "properties": {
+    "节点序号": 44,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Weird! You are saying that you want to generate a <strong>recursion of 1&lt;&lt;15 depth</strong>???!!!!</p><p>I'd suggest DON'T try it. The size of the stack will be <code>2^15 * sizeof(stack-frame)</code>. I don't know what stack-frame size is, but 2^15 is 32.768. Pretty much... Well, if it stops at 1024 (2^10) you'll have to make it 2^5 times bigger, it is, 32 times bigger than with your actual setting.</p>"
+   },
+   "isCenter": 0,
+   "labels": "3718555"
+  },
+  {
+   "id": "3735938",
+   "properties": {
+    "节点序号": 45,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>The only way to control the size of stack within process is start a new <code>Thread</code>. But you can also control by creating a self-calling sub Java process with the <code>-Xss</code> parameter.</p><pre><code>public class TT {    private static int level = 0;    public static long fact(int n) {        level++;        return n &lt; 2 ? n : n * fact(n - 1);    }    public static void main(String[] args) throws InterruptedException {        Thread t = new Thread(null, null, \"TT\", 1000000) {            @Override            public void run() {                try {                    level = 0;                    System.out.println(fact(1 &lt;&lt; 15));                } catch (StackOverflowError e) {                    System.err.println(\"true recursion level was \" + level);                    System.err.println(\"reported recursion level was \"                            + e.getStackTrace().length);                }            }        };        t.start();        t.join();        try {            level = 0;            System.out.println(fact(1 &lt;&lt; 15));        } catch (StackOverflowError e) {            System.err.println(\"true recursion level was \" + level);            System.err.println(\"reported recursion level was \"                    + e.getStackTrace().length);        }    }}</code></pre>"
+   },
+   "isCenter": 0,
+   "labels": "3735938"
+  },
+  {
+   "id": "3739125",
+   "properties": {
+    "节点序号": 46,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>It is hard to give a sensible solution since you are keen to avoid all sane approaches. Refactoring one line of code is the senible solution.  </p><p>Note: Using -Xss sets the stack size of every thread and is a very bad idea.</p><p>Another approach is byte code manipulation to change the code as follows;</p><pre><code>public static long fact(int n) {     return n &lt; 2 ? n : n &gt; 127 ? 0 : n * fact(n - 1); }</code></pre><p>given every answer for n > 127 is 0. This avoid changing the source code.</p>"
+   },
+   "isCenter": 0,
+   "labels": "3739125"
+  },
+  {
+   "id": "4275188",
+   "properties": {
+    "节点序号": 47,
+    "类型": "answer",
+    "out_degree": 1,
+    "in_degree": 1,
+    "body": "<p>Other posters have pointed out how to increase memory and that you could memoize calls. I'd suggest that for many applications, you can use Stirling's formula to approximate large n! very quickly with almost no memory footprint.</p><p>Take a gander at this post, which has some analysis of the function and code:</p><p><a href=\"http://threebrothers.org/brendan/blog/stirlings-approximation-formula-clojure/\" rel=\"nofollow\">http://threebrothers.org/brendan/blog/stirlings-approximation-formula-clojure/</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "4275188"
+  },
+  {
+   "id": "http://threebrothers.org/brendan/blog/stirlings-approximation-formula-clojure/",
+   "properties": {
+    "节点序号": 48,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Other posters have pointed out how to increase memory and that you could memoize calls. I'd suggest that for many applications, you can use Stirling's formula to approximate large n! very quickly with almost no memory footprint.</p><p>Take a gander at this post, which has some analysis of the function and code:</p><p><a href=\"http://threebrothers.org/brendan/blog/stirlings-approximation-formula-clojure/\" rel=\"nofollow\">http://threebrothers.org/brendan/blog/stirlings-approximation-formula-clojure/</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "threebrothers.org"
+  },
+  {
+   "id": "24468790",
+   "properties": {
+    "节点序号": 49,
+    "类型": "answer",
+    "out_degree": 3,
+    "in_degree": 1,
+    "body": "<p>I did <a href=\"https://class.coursera.org/progfun-004/assignment/view?assignment_id=17\" rel=\"nofollow\">Anagram excersize</a>, which is like <a href=\"http://mitpress.mit.edu/sicp/full-text/sicp/book/node16.html\" rel=\"nofollow\">Count Change</a> problem but with 50 000 denominations (coins). I am <a href=\"http://c2.com/cgi/wiki?SicpIterationExercise\" rel=\"nofollow\">not sure that it can be done iteratively</a>, I do not care. I just know that the -xss option had no effect -- I always failed after 1024 stack frames (might be scala does bad job delivering to to java or printStackTrace limitation. I do not know). This is bad option, as explained anyway. You do not want all threads in to app to be monstrous. However, I did some experiments with new Thread (stack size). This works indeed, </p><pre><code>  def measureStackDepth(ss: Long): Long = {    var depth: Long = 0      val thread: Thread = new Thread(null, new Runnable() {        override def run() {          try {          def sum(n: Long): Long = {depth += 1; if (n== 0) 0 else sum(n-1) + 1}          println(\"fact = \" + sum(ss * 10))          } catch {            case e: StackOverflowError =&gt; // eat the exception, that is expected          }        }      }, \"deep stack for money exchange\", ss)      thread.start()      thread.join()    depth  }                                               //&gt; measureStackDepth: (ss: Long)Long  for (ss &lt;- (0 to 10)) println(\"ss = 10^\" +  ss + \" allows stack of size \" -&gt; measureStackDepth((scala.math.pow (10, ss)).toLong) )                                                  //&gt; fact = 10                                                  //| (ss = 10^0 allows stack of size ,11)                                                  //| fact = 100                                                  //| (ss = 10^1 allows stack of size ,101)                                                  //| fact = 1000                                                  //| (ss = 10^2 allows stack of size ,1001)                                                  //| fact = 10000                                                  //| (ss = 10^3 allows stack of size ,10001)                                                  //| (ss = 10^4 allows stack of size ,1336)                                                  //| (ss = 10^5 allows stack of size ,5456)                                                  //| (ss = 10^6 allows stack of size ,62736)                                                  //| (ss = 10^7 allows stack of size ,623876)                                                  //| (ss = 10^8 allows stack of size ,6247732)                                                  //| (ss = 10^9 allows stack of size ,62498160)</code></pre><p>You see that stack can grow exponentially deeper with exponentially more stack alloted to the thread.</p>"
+   },
+   "isCenter": 0,
+   "labels": "24468790"
+  },
+  {
+   "id": "https://class.coursera.org/progfun-004/assignment/view?assignment_id=17",
+   "properties": {
+    "节点序号": 50,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I did <a href=\"https://class.coursera.org/progfun-004/assignment/view?assignment_id=17\" rel=\"nofollow\">Anagram excersize</a>, which is like <a href=\"http://mitpress.mit.edu/sicp/full-text/sicp/book/node16.html\" rel=\"nofollow\">Count Change</a> problem but with 50 000 denominations (coins). I am <a href=\"http://c2.com/cgi/wiki?SicpIterationExercise\" rel=\"nofollow\">not sure that it can be done iteratively</a>, I do not care. I just know that the -xss option had no effect -- I always failed after 1024 stack frames (might be scala does bad job delivering to to java or printStackTrace limitation. I do not know). This is bad option, as explained anyway. You do not want all threads in to app to be monstrous. However, I did some experiments with new Thread (stack size). This works indeed, </p><pre><code>  def measureStackDepth(ss: Long): Long = {    var depth: Long = 0      val thread: Thread = new Thread(null, new Runnable() {        override def run() {          try {          def sum(n: Long): Long = {depth += 1; if (n== 0) 0 else sum(n-1) + 1}          println(\"fact = \" + sum(ss * 10))          } catch {            case e: StackOverflowError =&gt; // eat the exception, that is expected          }        }      }, \"deep stack for money exchange\", ss)      thread.start()      thread.join()    depth  }                                               //&gt; measureStackDepth: (ss: Long)Long  for (ss &lt;- (0 to 10)) println(\"ss = 10^\" +  ss + \" allows stack of size \" -&gt; measureStackDepth((scala.math.pow (10, ss)).toLong) )                                                  //&gt; fact = 10                                                  //| (ss = 10^0 allows stack of size ,11)                                                  //| fact = 100                                                  //| (ss = 10^1 allows stack of size ,101)                                                  //| fact = 1000                                                  //| (ss = 10^2 allows stack of size ,1001)                                                  //| fact = 10000                                                  //| (ss = 10^3 allows stack of size ,10001)                                                  //| (ss = 10^4 allows stack of size ,1336)                                                  //| (ss = 10^5 allows stack of size ,5456)                                                  //| (ss = 10^6 allows stack of size ,62736)                                                  //| (ss = 10^7 allows stack of size ,623876)                                                  //| (ss = 10^8 allows stack of size ,6247732)                                                  //| (ss = 10^9 allows stack of size ,62498160)</code></pre><p>You see that stack can grow exponentially deeper with exponentially more stack alloted to the thread.</p>"
+   },
+   "isCenter": 0,
+   "labels": "class.coursera.org"
+  },
+  {
+   "id": "http://mitpress.mit.edu/sicp/full-text/sicp/book/node16.html",
+   "properties": {
+    "节点序号": 51,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I did <a href=\"https://class.coursera.org/progfun-004/assignment/view?assignment_id=17\" rel=\"nofollow\">Anagram excersize</a>, which is like <a href=\"http://mitpress.mit.edu/sicp/full-text/sicp/book/node16.html\" rel=\"nofollow\">Count Change</a> problem but with 50 000 denominations (coins). I am <a href=\"http://c2.com/cgi/wiki?SicpIterationExercise\" rel=\"nofollow\">not sure that it can be done iteratively</a>, I do not care. I just know that the -xss option had no effect -- I always failed after 1024 stack frames (might be scala does bad job delivering to to java or printStackTrace limitation. I do not know). This is bad option, as explained anyway. You do not want all threads in to app to be monstrous. However, I did some experiments with new Thread (stack size). This works indeed, </p><pre><code>  def measureStackDepth(ss: Long): Long = {    var depth: Long = 0      val thread: Thread = new Thread(null, new Runnable() {        override def run() {          try {          def sum(n: Long): Long = {depth += 1; if (n== 0) 0 else sum(n-1) + 1}          println(\"fact = \" + sum(ss * 10))          } catch {            case e: StackOverflowError =&gt; // eat the exception, that is expected          }        }      }, \"deep stack for money exchange\", ss)      thread.start()      thread.join()    depth  }                                               //&gt; measureStackDepth: (ss: Long)Long  for (ss &lt;- (0 to 10)) println(\"ss = 10^\" +  ss + \" allows stack of size \" -&gt; measureStackDepth((scala.math.pow (10, ss)).toLong) )                                                  //&gt; fact = 10                                                  //| (ss = 10^0 allows stack of size ,11)                                                  //| fact = 100                                                  //| (ss = 10^1 allows stack of size ,101)                                                  //| fact = 1000                                                  //| (ss = 10^2 allows stack of size ,1001)                                                  //| fact = 10000                                                  //| (ss = 10^3 allows stack of size ,10001)                                                  //| (ss = 10^4 allows stack of size ,1336)                                                  //| (ss = 10^5 allows stack of size ,5456)                                                  //| (ss = 10^6 allows stack of size ,62736)                                                  //| (ss = 10^7 allows stack of size ,623876)                                                  //| (ss = 10^8 allows stack of size ,6247732)                                                  //| (ss = 10^9 allows stack of size ,62498160)</code></pre><p>You see that stack can grow exponentially deeper with exponentially more stack alloted to the thread.</p>"
+   },
+   "isCenter": 0,
+   "labels": "mitpress.mit.edu"
+  },
+  {
+   "id": "http://c2.com/cgi/wiki?sicpiterationexercise",
+   "properties": {
+    "节点序号": 52,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I did <a href=\"https://class.coursera.org/progfun-004/assignment/view?assignment_id=17\" rel=\"nofollow\">Anagram excersize</a>, which is like <a href=\"http://mitpress.mit.edu/sicp/full-text/sicp/book/node16.html\" rel=\"nofollow\">Count Change</a> problem but with 50 000 denominations (coins). I am <a href=\"http://c2.com/cgi/wiki?SicpIterationExercise\" rel=\"nofollow\">not sure that it can be done iteratively</a>, I do not care. I just know that the -xss option had no effect -- I always failed after 1024 stack frames (might be scala does bad job delivering to to java or printStackTrace limitation. I do not know). This is bad option, as explained anyway. You do not want all threads in to app to be monstrous. However, I did some experiments with new Thread (stack size). This works indeed, </p><pre><code>  def measureStackDepth(ss: Long): Long = {    var depth: Long = 0      val thread: Thread = new Thread(null, new Runnable() {        override def run() {          try {          def sum(n: Long): Long = {depth += 1; if (n== 0) 0 else sum(n-1) + 1}          println(\"fact = \" + sum(ss * 10))          } catch {            case e: StackOverflowError =&gt; // eat the exception, that is expected          }        }      }, \"deep stack for money exchange\", ss)      thread.start()      thread.join()    depth  }                                               //&gt; measureStackDepth: (ss: Long)Long  for (ss &lt;- (0 to 10)) println(\"ss = 10^\" +  ss + \" allows stack of size \" -&gt; measureStackDepth((scala.math.pow (10, ss)).toLong) )                                                  //&gt; fact = 10                                                  //| (ss = 10^0 allows stack of size ,11)                                                  //| fact = 100                                                  //| (ss = 10^1 allows stack of size ,101)                                                  //| fact = 1000                                                  //| (ss = 10^2 allows stack of size ,1001)                                                  //| fact = 10000                                                  //| (ss = 10^3 allows stack of size ,10001)                                                  //| (ss = 10^4 allows stack of size ,1336)                                                  //| (ss = 10^5 allows stack of size ,5456)                                                  //| (ss = 10^6 allows stack of size ,62736)                                                  //| (ss = 10^7 allows stack of size ,623876)                                                  //| (ss = 10^8 allows stack of size ,6247732)                                                  //| (ss = 10^9 allows stack of size ,62498160)</code></pre><p>You see that stack can grow exponentially deeper with exponentially more stack alloted to the thread.</p>"
+   },
+   "isCenter": 0,
+   "labels": "c2.com"
+  },
+  {
+   "id": "40878173",
+   "properties": {
+    "节点序号": 53,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Add this option </p><pre><code>--driver-java-options -Xss512m</code></pre><p>to your spark-submit command will fix this issue.</p>"
+   },
+   "isCenter": 0,
+   "labels": "40878173"
+  },
+  {
+   "id": "8884818",
+   "properties": {
+    "节点序号": 54,
+    "类型": "Question",
+    "out_degree": 4,
+    "in_degree": 1,
+    "body": "<p>I keep getting the following error after I put the required files in my build path on Eclipse. I am working on a Spring MVC Hello World Application and using Eclipse Helios for Java EE developers:</p><pre><code>Jan 16, 2012 1:25:42 PM org.apache.catalina.core.StandardContext loadOnStartupSEVERE: Servlet /SpringMVCTutorial threw load() exceptionjava.lang.ClassNotFoundException: org.springframework.web.servlet.DispatcherServlet    at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1676)    at org.apache.catalina.loader.WebappClassLoader.loadClass(WebappClassLoader.java:1521)    at org.apache.catalina.core.DefaultInstanceManager.loadClass(DefaultInstanceManager.java:415)    at org.apache.catalina.core.DefaultInstanceManager.loadClassMaybePrivileged(DefaultInstanceManager.java:397)    at org.apache.catalina.core.DefaultInstanceManager.newInstance(DefaultInstanceManager.java:118)    at org.apache.catalina.core.StandardWrapper.loadServlet(StandardWrapper.java:1062)    at org.apache.catalina.core.StandardWrapper.load(StandardWrapper.java:1010)    at org.apache.catalina.core.StandardContext.loadOnStartup(StandardContext.java:4957)    at org.apache.catalina.core.StandardContext$3.call(StandardContext.java:5284)    at org.apache.catalina.core.StandardContext$3.call(StandardContext.java:5279)    at java.util.concurrent.FutureTask$Sync.innerRun(Unknown Source)    at java.util.concurrent.FutureTask.run(Unknown Source)    at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(Unknown Source)    at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source)    at java.lang.Thread.run(Unknown Source)</code></pre><p>I have tried right-clicking the server and clicking \"clean\".  I right click the application, click \"Build Path\" the \"Configure Build Path\" and put the right JAR files in the library; however, it still doesn't acknowledge them as dependencies.  What am I missing?</p><p>I have tried the advice presented <a href=\"https://stackoverflow.com/questions/4255826/eclipse-helios-tomcat-project-jar-will-not-be-exported-or-published-runtime\">here</a>:</p><ol><li>Right-click on your Web project</li><li>Click 'Properties'</li><li>Select 'Java EE Module Dependencies'</li><li>Click the 'Web Libraries' tab</li><li>Add external JARs (if the JAR is outside of your project). An entry will be added under Jar/Module, make sure you click on the checkbox (checked).</li></ol><p>The problem is that when I select \"Click Properties\", I do not have the option of clicking Java EE Module dependencies, as it doesn't appear. I downloaded any extra Java EE tools and still can't find it.</p>"
+   },
+   "isCenter": 0,
+   "labels": "8884818"
+  },
+  {
+   "id": "8885905",
+   "properties": {
+    "节点序号": 55,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Right-click on your project in the 'Project Explorer' tab and go to 'Build path' → 'Configure build path' → 'External jars`, and add all the JARs that you want.</p>"
+   },
+   "isCenter": 0,
+   "labels": "8885905"
+  },
+  {
+   "id": "8958810",
+   "properties": {
+    "节点序号": 56,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>In order to get it to work right, I have to \"drop and drag\" the files that I want in my classpath/dependencies into my the <code>WEB-INF/lib</code> folder. It works this way.  </p><p>For some reason, when I try to do it the right way </p><blockquote>  <p>Build path → Configure build path → External jars</p></blockquote><p>it just doesn't take them.  </p><p>The trick is that I have to put the files int my Web App Libraries folder and the only way to do that (that I can see) is to \"click and drop\" into my <code>WEB-INF/lib</code> folder. In this way, it automatically shows up in my Web App Libraries.</p>"
+   },
+   "isCenter": 0,
+   "labels": "8958810"
+  },
+  {
+   "id": "34336092",
+   "properties": {
+    "节点序号": 57,
+    "类型": "answer",
+    "out_degree": 2,
+    "in_degree": 1,
+    "body": "<p>When adding new jar files, I got two messages on Eclipse's <code>Problems Tab</code>: one error and one warning. I only solved this problem when combining all previous solutions with an extra step. Here's how I solved it:</p><ol><li>\"Drag and drop\" the files that I want in my <code>classpath/dependencies</code> into my  <code>WEB-INF/lib/</code> folder;</li><li>Right-click on your project in the <code>Package Explorer</code> tab, and <code>build path --&gt; configure build path --&gt; external jars</code>, adding the desired files;</li><li>Restarted Eclipse;</li><li>Select <code>Project --&gt; Clean…</code>. My system is configured to build automatically, so after this step, the error message was gone, but the warning <code>XXXXXXXXXXX.jar will not be exported or published. Runtime ClassNotFoundExceptions may result</code> remained;</li><li>Right-click on warning message --> <code>Quick Fix</code>;</li><li>Select the option <code>Mark the associated raw classpath entry as a publish/export dependency.</code> (in the following figure)</li></ol><p><a href=\"https://i.stack.imgur.com/WERCk.jpg\" rel=\"nofollow noreferrer\"><img src=\"https://i.stack.imgur.com/WERCk.jpg\" alt=\"Quick fix for warning message\"></a></p>"
+   },
+   "isCenter": 0,
+   "labels": "34336092"
+  },
+  {
+   "id": "https://i.stack.imgur.com/werck.jpg",
+   "properties": {
+    "节点序号": 58,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 2,
+    "body": "<p>When adding new jar files, I got two messages on Eclipse's <code>Problems Tab</code>: one error and one warning. I only solved this problem when combining all previous solutions with an extra step. Here's how I solved it:</p><ol><li>\"Drag and drop\" the files that I want in my <code>classpath/dependencies</code> into my  <code>WEB-INF/lib/</code> folder;</li><li>Right-click on your project in the <code>Package Explorer</code> tab, and <code>build path --&gt; configure build path --&gt; external jars</code>, adding the desired files;</li><li>Restarted Eclipse;</li><li>Select <code>Project --&gt; Clean…</code>. My system is configured to build automatically, so after this step, the error message was gone, but the warning <code>XXXXXXXXXXX.jar will not be exported or published. Runtime ClassNotFoundExceptions may result</code> remained;</li><li>Right-click on warning message --> <code>Quick Fix</code>;</li><li>Select the option <code>Mark the associated raw classpath entry as a publish/export dependency.</code> (in the following figure)</li></ol><p><a href=\"https://i.stack.imgur.com/WERCk.jpg\" rel=\"nofollow noreferrer\"><img src=\"https://i.stack.imgur.com/WERCk.jpg\" alt=\"Quick fix for warning message\"></a></p>"
+   },
+   "isCenter": 0,
+   "labels": "i.stack.imgur.com"
+  },
+  {
+   "id": "https://i.stack.imgur.com/werck.jpg",
+   "properties": {
+    "节点序号": 59,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 2,
+    "body": "<p>When adding new jar files, I got two messages on Eclipse's <code>Problems Tab</code>: one error and one warning. I only solved this problem when combining all previous solutions with an extra step. Here's how I solved it:</p><ol><li>\"Drag and drop\" the files that I want in my <code>classpath/dependencies</code> into my  <code>WEB-INF/lib/</code> folder;</li><li>Right-click on your project in the <code>Package Explorer</code> tab, and <code>build path --&gt; configure build path --&gt; external jars</code>, adding the desired files;</li><li>Restarted Eclipse;</li><li>Select <code>Project --&gt; Clean…</code>. My system is configured to build automatically, so after this step, the error message was gone, but the warning <code>XXXXXXXXXXX.jar will not be exported or published. Runtime ClassNotFoundExceptions may result</code> remained;</li><li>Right-click on warning message --> <code>Quick Fix</code>;</li><li>Select the option <code>Mark the associated raw classpath entry as a publish/export dependency.</code> (in the following figure)</li></ol><p><a href=\"https://i.stack.imgur.com/WERCk.jpg\" rel=\"nofollow noreferrer\"><img src=\"https://i.stack.imgur.com/WERCk.jpg\" alt=\"Quick fix for warning message\"></a></p>"
+   },
+   "isCenter": 0,
+   "labels": "i.stack.imgur.com"
+  },
+  {
+   "id": "105834",
+   "properties": {
+    "节点序号": 60,
+    "类型": "Question",
+    "out_degree": 5,
+    "in_degree": 1,
+    "body": "<p>I saw this quote on the question: <a href=\"https://stackoverflow.com/questions/105710\">What is a good functional language on which to build a web service?</a></p><blockquote>  <p>Scala in particular doesn't support tail-call elimination except in self-recursive functions, which limits the kinds of composition you can do (this is a fundamental limitation of the JVM).</p></blockquote><p>Is this true?  If so, what is it about the JVM that creates this fundamental limitation?</p>"
+   },
+   "isCenter": 0,
+   "labels": "105834"
+  },
+  {
+   "id": "105897",
+   "properties": {
+    "节点序号": 61,
+    "类型": "answer",
+    "out_degree": 4,
+    "in_degree": 1,
+    "body": "<p>This post: <a href=\"https://stackoverflow.com/questions/72209/recursion-or-loop#72522\">Recursion or Iteration?</a> might help.</p><p>In short, tail call optimization is hard to do in the JVM because of the security model and the need to always have a stack trace available. These requirements could in theory be supported, but it would probably require a new bytecode (see <a href=\"https://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm\" rel=\"nofollow noreferrer\">John Rose's informal proposal</a>).</p><p>There is also more discussion in <a href=\"http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4726340\" rel=\"nofollow noreferrer\">Sun bug #4726340</a>, where the evaluation (from 2002) ends:</p><blockquote>  <p>I believe this could be done nonetheless, but it is not a small task.</p></blockquote><p>Currently, there is some work going on in the <a href=\"http://openjdk.java.net/projects/mlvm/subprojects.html\" rel=\"nofollow noreferrer\">Da Vinci Machine</a> project. The tail call subproject's status is listed as \"proto 80%\"; it is unlikely to make it into Java 7, but I think it has a very good chance at Java 8.</p>"
+   },
+   "isCenter": 0,
+   "labels": "105897"
+  },
+  {
+   "id": "https://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm",
+   "properties": {
+    "节点序号": 62,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>This post: <a href=\"https://stackoverflow.com/questions/72209/recursion-or-loop#72522\">Recursion or Iteration?</a> might help.</p><p>In short, tail call optimization is hard to do in the JVM because of the security model and the need to always have a stack trace available. These requirements could in theory be supported, but it would probably require a new bytecode (see <a href=\"https://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm\" rel=\"nofollow noreferrer\">John Rose's informal proposal</a>).</p><p>There is also more discussion in <a href=\"http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4726340\" rel=\"nofollow noreferrer\">Sun bug #4726340</a>, where the evaluation (from 2002) ends:</p><blockquote>  <p>I believe this could be done nonetheless, but it is not a small task.</p></blockquote><p>Currently, there is some work going on in the <a href=\"http://openjdk.java.net/projects/mlvm/subprojects.html\" rel=\"nofollow noreferrer\">Da Vinci Machine</a> project. The tail call subproject's status is listed as \"proto 80%\"; it is unlikely to make it into Java 7, but I think it has a very good chance at Java 8.</p>"
+   },
+   "isCenter": 0,
+   "labels": "blogs.oracle.com"
+  },
+  {
+   "id": "http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4726340",
+   "properties": {
+    "节点序号": 63,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>This post: <a href=\"https://stackoverflow.com/questions/72209/recursion-or-loop#72522\">Recursion or Iteration?</a> might help.</p><p>In short, tail call optimization is hard to do in the JVM because of the security model and the need to always have a stack trace available. These requirements could in theory be supported, but it would probably require a new bytecode (see <a href=\"https://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm\" rel=\"nofollow noreferrer\">John Rose's informal proposal</a>).</p><p>There is also more discussion in <a href=\"http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4726340\" rel=\"nofollow noreferrer\">Sun bug #4726340</a>, where the evaluation (from 2002) ends:</p><blockquote>  <p>I believe this could be done nonetheless, but it is not a small task.</p></blockquote><p>Currently, there is some work going on in the <a href=\"http://openjdk.java.net/projects/mlvm/subprojects.html\" rel=\"nofollow noreferrer\">Da Vinci Machine</a> project. The tail call subproject's status is listed as \"proto 80%\"; it is unlikely to make it into Java 7, but I think it has a very good chance at Java 8.</p>"
+   },
+   "isCenter": 0,
+   "labels": "bugs.sun.com"
+  },
+  {
+   "id": "http://openjdk.java.net/projects/mlvm/subprojects.html",
+   "properties": {
+    "节点序号": 64,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>This post: <a href=\"https://stackoverflow.com/questions/72209/recursion-or-loop#72522\">Recursion or Iteration?</a> might help.</p><p>In short, tail call optimization is hard to do in the JVM because of the security model and the need to always have a stack trace available. These requirements could in theory be supported, but it would probably require a new bytecode (see <a href=\"https://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm\" rel=\"nofollow noreferrer\">John Rose's informal proposal</a>).</p><p>There is also more discussion in <a href=\"http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4726340\" rel=\"nofollow noreferrer\">Sun bug #4726340</a>, where the evaluation (from 2002) ends:</p><blockquote>  <p>I believe this could be done nonetheless, but it is not a small task.</p></blockquote><p>Currently, there is some work going on in the <a href=\"http://openjdk.java.net/projects/mlvm/subprojects.html\" rel=\"nofollow noreferrer\">Da Vinci Machine</a> project. The tail call subproject's status is listed as \"proto 80%\"; it is unlikely to make it into Java 7, but I think it has a very good chance at Java 8.</p>"
+   },
+   "isCenter": 0,
+   "labels": "openjdk.java.net"
+  },
+  {
+   "id": "106119",
+   "properties": {
+    "节点序号": 65,
+    "类型": "answer",
+    "out_degree": 2,
+    "in_degree": 1,
+    "body": "<p>In addition to the paper linked in Lambda The Ultimate (from the link mmyers posted above), John Rose from Sun has some more to say about tail call optimization.</p><p><a href=\"http://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm\" rel=\"nofollow noreferrer\">http://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm</a></p><p>I have heard that it might be implemented on the JVM someday. Tail call support amongst other things are being looked at on the Da Vinci Machine.</p><p><a href=\"http://openjdk.java.net/projects/mlvm/\" rel=\"nofollow noreferrer\">http://openjdk.java.net/projects/mlvm/</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "106119"
+  },
+  {
+   "id": "http://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm",
+   "properties": {
+    "节点序号": 66,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>In addition to the paper linked in Lambda The Ultimate (from the link mmyers posted above), John Rose from Sun has some more to say about tail call optimization.</p><p><a href=\"http://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm\" rel=\"nofollow noreferrer\">http://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm</a></p><p>I have heard that it might be implemented on the JVM someday. Tail call support amongst other things are being looked at on the Da Vinci Machine.</p><p><a href=\"http://openjdk.java.net/projects/mlvm/\" rel=\"nofollow noreferrer\">http://openjdk.java.net/projects/mlvm/</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "blogs.oracle.com"
+  },
+  {
+   "id": "http://openjdk.java.net/projects/mlvm/",
+   "properties": {
+    "节点序号": 67,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>In addition to the paper linked in Lambda The Ultimate (from the link mmyers posted above), John Rose from Sun has some more to say about tail call optimization.</p><p><a href=\"http://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm\" rel=\"nofollow noreferrer\">http://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm</a></p><p>I have heard that it might be implemented on the JVM someday. Tail call support amongst other things are being looked at on the Da Vinci Machine.</p><p><a href=\"http://openjdk.java.net/projects/mlvm/\" rel=\"nofollow noreferrer\">http://openjdk.java.net/projects/mlvm/</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "openjdk.java.net"
+  },
+  {
+   "id": "267496",
+   "properties": {
+    "节点序号": 68,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>The fundamental limitation is simply that the JVM does not provide tail calls in its byte code and, consequently, there is no direct way for a language built upon the JVM to provide tail calls itself. There are workarounds that can achieve a similar effect (e.g. trampolining) but they come at the grave cost of awful performance and obfuscating the generated intermediate code which makes a debugger useless.</p><p>So the JVM cannot support any production-quality functional programming languages until Sun implement tail calls in the JVM itself. They have been discussing it for years but I doubt they will ever implement tail calls: it will be very difficult because they have prematurely optimized their VM before implementing such basic functionality, and Sun's effort is strongly focused on dynamic languages rather than functional languages.</p><p>Hence there is a very strong argument that Scala is not a real functional programming language: these languages have regarded tail calls as an essential feature since Scheme was first introduced over 30 years ago.</p>"
+   },
+   "isCenter": 0,
+   "labels": "267496"
+  },
+  {
+   "id": "1016061",
+   "properties": {
+    "节点序号": 69,
+    "类型": "answer",
+    "out_degree": 1,
+    "in_degree": 1,
+    "body": "<p>Scala 2.7.x supports tail-call optimization for self-recursion (a function calling itself) of final methods and local functions.</p><p>Scala 2.8 might come with library support for trampoline too, which is a technique to optimize mutually recursive functions.</p><p>A good deal of information about the state of Scala recursion can be found in <a href=\"http://blog.richdougherty.com/2009/04/tail-calls-tailrec-and-trampolines.html\" rel=\"noreferrer\">Rich Dougherty's blog</a>.</p>"
+   },
+   "isCenter": 0,
+   "labels": "1016061"
+  },
+  {
+   "id": "http://blog.richdougherty.com/2009/04/tail-calls-tailrec-and-trampolines.html",
+   "properties": {
+    "节点序号": 70,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>Scala 2.7.x supports tail-call optimization for self-recursion (a function calling itself) of final methods and local functions.</p><p>Scala 2.8 might come with library support for trampoline too, which is a technique to optimize mutually recursive functions.</p><p>A good deal of information about the state of Scala recursion can be found in <a href=\"http://blog.richdougherty.com/2009/04/tail-calls-tailrec-and-trampolines.html\" rel=\"noreferrer\">Rich Dougherty's blog</a>.</p>"
+   },
+   "isCenter": 0,
+   "labels": "blog.richdougherty.com"
+  },
+  {
+   "id": "4325606",
+   "properties": {
+    "节点序号": 71,
+    "类型": "answer",
+    "out_degree": 1,
+    "in_degree": 1,
+    "body": "<p>All sources point to the JVM being unable to optimize in the case of tail recursion, but upon reading <a href=\"http://books.google.ca/books?id=iPHtCfZQyqQC&amp;printsec=frontcover&amp;dq=java%20performance%20tuning&amp;hl=en&amp;ei=gGH2TOrfM4SKlwfT0ozVBQ&amp;sa=X&amp;oi=book_result&amp;ct=result&amp;resnum=1&amp;ved=0CDAQ6AEwAA#v=onepage&amp;q&amp;f=false\" rel=\"nofollow\">Java performance tuning</a> (2003, O'reilly) I found the author claiming he can achieve greater recursion performance by implementing tail recursion.</p><p>You can find his claim on page 212 (search for 'tail recursion' it should be the second result). What gives?</p>"
+   },
+   "isCenter": 0,
+   "labels": "4325606"
+  },
+  {
+   "id": "http://books.google.ca/books?id=iphtcfzqyqqc&amp;printsec=frontcover&amp;dq=java%20performance%20tuning&amp;hl=en&amp;ei=ggh2torfm4sklwft0ozvbq&amp;sa=x&amp;oi=book_result&amp;ct=result&amp;resnum=1&amp;ved=0cdaq6aewaa#v=onepage&amp;q&amp;f=false",
+   "properties": {
+    "节点序号": 72,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>All sources point to the JVM being unable to optimize in the case of tail recursion, but upon reading <a href=\"http://books.google.ca/books?id=iPHtCfZQyqQC&amp;printsec=frontcover&amp;dq=java%20performance%20tuning&amp;hl=en&amp;ei=gGH2TOrfM4SKlwfT0ozVBQ&amp;sa=X&amp;oi=book_result&amp;ct=result&amp;resnum=1&amp;ved=0CDAQ6AEwAA#v=onepage&amp;q&amp;f=false\" rel=\"nofollow\">Java performance tuning</a> (2003, O'reilly) I found the author claiming he can achieve greater recursion performance by implementing tail recursion.</p><p>You can find his claim on page 212 (search for 'tail recursion' it should be the second result). What gives?</p>"
+   },
+   "isCenter": 0,
+   "labels": "books.google.ca"
+  },
+  {
+   "id": "4255826",
+   "properties": {
+    "节点序号": 73,
+    "类型": "Question",
+    "out_degree": 3,
+    "in_degree": 1,
+    "body": "<p>I'm using Eclipse Helios and I was wondering how can I add a library project to my folder that will be copied to the build directory where my compiled project resides.</p><p>currently I did the following:</p><ol><li>created a lib directory in the root of my project</li><li>copied the relevant jars to that dir</li><li>My Project -> properties -> Java Build Path -> add jars and I added all the jars from that directory.</li></ol><p>after adding all the jars i got the following warning regarding each of the jar file:</p><pre><code>jar will not be exported or published. runtime ClassNotFoundExceptions may result</code></pre><p>first of all how can I add the directory of the jars instead of individual jars?and the 2nd question is how can I do that the libraries will be deployed properly when compiling my application ?!</p>"
+   },
+   "isCenter": 0,
+   "labels": "4255826"
+  },
+  {
+   "id": "4255827",
+   "properties": {
+    "节点序号": 74,
+    "类型": "answer",
+    "out_degree": 3,
+    "in_degree": 1,
+    "body": "<p>It can be about:</p><ul><li>a <a href=\"http://www.coderanch.com/t/448061/vc/Eclipse-project-Jar-will-not\" rel=\"nofollow noreferrer\">simple refresh</a> issue:</li></ul><blockquote>  <p>Can you switch to the navigator view, right-click refresh the project, make sure it's not in the <code>LIB</code> dir,<br>  Then try and drag and drop the JAR into the <code>lib</code> dir and see if it shows up.</p></blockquote><ul><li>a process issue (from this <a href=\"http://web.archive.org/web/20120825092050/http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx\" rel=\"nofollow noreferrer\">cached blog entry</a>, the <a href=\"http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx\" rel=\"nofollow noreferrer\">original one</a> being unavailable):</li></ul><blockquote>  <p>When you have total control of you web container/app server, deploying jar files is as easy as dropping the folder in your common lib folder.<br>  If you don't package your web apps as a <code>war</code> file then it's even easier because you only have to drop the jars in the <code>WEB-INF/lib</code> folder of your webapp.<br>  But if you don't have total control of  your web server or application server, your only choice is to package the jars you've used with your war file.</p>    <p>While developing a web project using my recently developed utility(a jar file), I encountered a <code>NoClassDefFound</code> error. Of course, it's pretty obvious that the jar file I've made and using on my web project could not be found (not visible in the <code>CLASSPATH</code>).<br>  Adding the jar to the build path only eliminated the compilation problem. Dragging the jar file into the lib folder of my Eclipse workspace isn't a very good idea.<br>  It took me a couple of hours before I figured out the solution:</p>    <ol>  <li>Right Click on your web project</li>  <li>Click Properties</li>  <li>Select J2EE Module Dependencies</li>  <li>Click the Web Libraries Tab</li>  <li>Add external jars (if the jar is outside of your project). An entry will be added under <code>Jar/Module</code>, make sure you click on the checkbox (checked).</li>  </ol>    <p>And everything should be fine. I tried exporting to a war file and then checked the content and my jar files are indeed deployed with the war.</p></blockquote><ul><li>a project configuration issue</li></ul><p>The OP <a href=\"https://stackoverflow.com/users/80932/ufk\">ufk</a> mentions in the comment:</p><blockquote>  <p>I resolved the issue by:</p>    <ul>  <li><strong>adding a \"Web App Libraries\" library in \"java build path\"</strong> and </li>  <li><strong>adding all the relevant jars into <code>WebContent/WEB-INF/lib</code></strong></li>  </ul></blockquote>"
+   },
+   "isCenter": 0,
+   "labels": "4255827"
+  },
+  {
+   "id": "http://www.coderanch.com/t/448061/vc/eclipse-project-jar-will-not",
+   "properties": {
+    "节点序号": 75,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>It can be about:</p><ul><li>a <a href=\"http://www.coderanch.com/t/448061/vc/Eclipse-project-Jar-will-not\" rel=\"nofollow noreferrer\">simple refresh</a> issue:</li></ul><blockquote>  <p>Can you switch to the navigator view, right-click refresh the project, make sure it's not in the <code>LIB</code> dir,<br>  Then try and drag and drop the JAR into the <code>lib</code> dir and see if it shows up.</p></blockquote><ul><li>a process issue (from this <a href=\"http://web.archive.org/web/20120825092050/http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx\" rel=\"nofollow noreferrer\">cached blog entry</a>, the <a href=\"http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx\" rel=\"nofollow noreferrer\">original one</a> being unavailable):</li></ul><blockquote>  <p>When you have total control of you web container/app server, deploying jar files is as easy as dropping the folder in your common lib folder.<br>  If you don't package your web apps as a <code>war</code> file then it's even easier because you only have to drop the jars in the <code>WEB-INF/lib</code> folder of your webapp.<br>  But if you don't have total control of  your web server or application server, your only choice is to package the jars you've used with your war file.</p>    <p>While developing a web project using my recently developed utility(a jar file), I encountered a <code>NoClassDefFound</code> error. Of course, it's pretty obvious that the jar file I've made and using on my web project could not be found (not visible in the <code>CLASSPATH</code>).<br>  Adding the jar to the build path only eliminated the compilation problem. Dragging the jar file into the lib folder of my Eclipse workspace isn't a very good idea.<br>  It took me a couple of hours before I figured out the solution:</p>    <ol>  <li>Right Click on your web project</li>  <li>Click Properties</li>  <li>Select J2EE Module Dependencies</li>  <li>Click the Web Libraries Tab</li>  <li>Add external jars (if the jar is outside of your project). An entry will be added under <code>Jar/Module</code>, make sure you click on the checkbox (checked).</li>  </ol>    <p>And everything should be fine. I tried exporting to a war file and then checked the content and my jar files are indeed deployed with the war.</p></blockquote><ul><li>a project configuration issue</li></ul><p>The OP <a href=\"https://stackoverflow.com/users/80932/ufk\">ufk</a> mentions in the comment:</p><blockquote>  <p>I resolved the issue by:</p>    <ul>  <li><strong>adding a \"Web App Libraries\" library in \"java build path\"</strong> and </li>  <li><strong>adding all the relevant jars into <code>WebContent/WEB-INF/lib</code></strong></li>  </ul></blockquote>"
+   },
+   "isCenter": 0,
+   "labels": "www.coderanch.com"
+  },
+  {
+   "id": "http://web.archive.org/web/20120825092050/http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx",
+   "properties": {
+    "节点序号": 76,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>It can be about:</p><ul><li>a <a href=\"http://www.coderanch.com/t/448061/vc/Eclipse-project-Jar-will-not\" rel=\"nofollow noreferrer\">simple refresh</a> issue:</li></ul><blockquote>  <p>Can you switch to the navigator view, right-click refresh the project, make sure it's not in the <code>LIB</code> dir,<br>  Then try and drag and drop the JAR into the <code>lib</code> dir and see if it shows up.</p></blockquote><ul><li>a process issue (from this <a href=\"http://web.archive.org/web/20120825092050/http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx\" rel=\"nofollow noreferrer\">cached blog entry</a>, the <a href=\"http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx\" rel=\"nofollow noreferrer\">original one</a> being unavailable):</li></ul><blockquote>  <p>When you have total control of you web container/app server, deploying jar files is as easy as dropping the folder in your common lib folder.<br>  If you don't package your web apps as a <code>war</code> file then it's even easier because you only have to drop the jars in the <code>WEB-INF/lib</code> folder of your webapp.<br>  But if you don't have total control of  your web server or application server, your only choice is to package the jars you've used with your war file.</p>    <p>While developing a web project using my recently developed utility(a jar file), I encountered a <code>NoClassDefFound</code> error. Of course, it's pretty obvious that the jar file I've made and using on my web project could not be found (not visible in the <code>CLASSPATH</code>).<br>  Adding the jar to the build path only eliminated the compilation problem. Dragging the jar file into the lib folder of my Eclipse workspace isn't a very good idea.<br>  It took me a couple of hours before I figured out the solution:</p>    <ol>  <li>Right Click on your web project</li>  <li>Click Properties</li>  <li>Select J2EE Module Dependencies</li>  <li>Click the Web Libraries Tab</li>  <li>Add external jars (if the jar is outside of your project). An entry will be added under <code>Jar/Module</code>, make sure you click on the checkbox (checked).</li>  </ol>    <p>And everything should be fine. I tried exporting to a war file and then checked the content and my jar files are indeed deployed with the war.</p></blockquote><ul><li>a project configuration issue</li></ul><p>The OP <a href=\"https://stackoverflow.com/users/80932/ufk\">ufk</a> mentions in the comment:</p><blockquote>  <p>I resolved the issue by:</p>    <ul>  <li><strong>adding a \"Web App Libraries\" library in \"java build path\"</strong> and </li>  <li><strong>adding all the relevant jars into <code>WebContent/WEB-INF/lib</code></strong></li>  </ul></blockquote>"
+   },
+   "isCenter": 0,
+   "labels": "web.archive.org"
+  },
+  {
+   "id": "http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx",
+   "properties": {
+    "节点序号": 77,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>It can be about:</p><ul><li>a <a href=\"http://www.coderanch.com/t/448061/vc/Eclipse-project-Jar-will-not\" rel=\"nofollow noreferrer\">simple refresh</a> issue:</li></ul><blockquote>  <p>Can you switch to the navigator view, right-click refresh the project, make sure it's not in the <code>LIB</code> dir,<br>  Then try and drag and drop the JAR into the <code>lib</code> dir and see if it shows up.</p></blockquote><ul><li>a process issue (from this <a href=\"http://web.archive.org/web/20120825092050/http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx\" rel=\"nofollow noreferrer\">cached blog entry</a>, the <a href=\"http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx\" rel=\"nofollow noreferrer\">original one</a> being unavailable):</li></ul><blockquote>  <p>When you have total control of you web container/app server, deploying jar files is as easy as dropping the folder in your common lib folder.<br>  If you don't package your web apps as a <code>war</code> file then it's even easier because you only have to drop the jars in the <code>WEB-INF/lib</code> folder of your webapp.<br>  But if you don't have total control of  your web server or application server, your only choice is to package the jars you've used with your war file.</p>    <p>While developing a web project using my recently developed utility(a jar file), I encountered a <code>NoClassDefFound</code> error. Of course, it's pretty obvious that the jar file I've made and using on my web project could not be found (not visible in the <code>CLASSPATH</code>).<br>  Adding the jar to the build path only eliminated the compilation problem. Dragging the jar file into the lib folder of my Eclipse workspace isn't a very good idea.<br>  It took me a couple of hours before I figured out the solution:</p>    <ol>  <li>Right Click on your web project</li>  <li>Click Properties</li>  <li>Select J2EE Module Dependencies</li>  <li>Click the Web Libraries Tab</li>  <li>Add external jars (if the jar is outside of your project). An entry will be added under <code>Jar/Module</code>, make sure you click on the checkbox (checked).</li>  </ol>    <p>And everything should be fine. I tried exporting to a war file and then checked the content and my jar files are indeed deployed with the war.</p></blockquote><ul><li>a project configuration issue</li></ul><p>The OP <a href=\"https://stackoverflow.com/users/80932/ufk\">ufk</a> mentions in the comment:</p><blockquote>  <p>I resolved the issue by:</p>    <ul>  <li><strong>adding a \"Web App Libraries\" library in \"java build path\"</strong> and </li>  <li><strong>adding all the relevant jars into <code>WebContent/WEB-INF/lib</code></strong></li>  </ul></blockquote>"
+   },
+   "isCenter": 0,
+   "labels": "devpinoy.org"
+  },
+  {
+   "id": "19513243",
+   "properties": {
+    "节点序号": 78,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>In eclipse Junu:</p><p>in a web project, after adding jar to build path, one must add it to </p><pre><code>Deployment Assembly</code></pre><p>(in project properties)</p><p>when adding that jar to \"Deployment Assembly\"  press the add button and select</p><pre><code>Java Build Path Entry</code></pre><p>(and not other workspace or file system option)</p>"
+   },
+   "isCenter": 0,
+   "labels": "19513243"
+  },
+  {
+   "id": "21076551",
+   "properties": {
+    "节点序号": 79,
+    "类型": "answer",
+    "out_degree": 0,
+    "in_degree": 1,
+    "body": "<p>I was facing the same problem, like whenever I export my web app as a war file, the external added jar files didn't get included in app/lib directory, causing exceptions during deployment. </p><p>you Have to switch the navigator view, right-click refresh the project, make sure it's not in the LIB dir (but in the  project folder)</p><p>then try and drag and drop the JAR into the lib dir and see if it shows up.</p>"
+   },
+   "isCenter": 0,
+   "labels": "21076551"
+  },
+  {
+   "id": "72522",
+   "properties": {
+    "节点序号": 80,
+    "类型": "answer",
+    "out_degree": 2,
+    "in_degree": 1,
+    "body": "<p>I believe tail recursion in java is not currently optimized.  The details are sprinkled throughout <a href=\"http://lambda-the-ultimate.org/node/1333\" rel=\"noreferrer\">this</a> discussion on LtU and the associated links.  It <em>may</em> be a feature in the upcoming version 7, but apparently it presents certain difficulties when combined with Stack Inspection since certain frames would be missing.  Stack Inspection has been used to implement their fine-grained security model since Java 2.</p><p><a href=\"http://lambda-the-ultimate.org/node/1333\" rel=\"noreferrer\">http://lambda-the-ultimate.org/node/1333</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "72522"
+  },
+  {
+   "id": "http://lambda-the-ultimate.org/node/1333",
+   "properties": {
+    "节点序号": 81,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 2,
+    "body": "<p>I believe tail recursion in java is not currently optimized.  The details are sprinkled throughout <a href=\"http://lambda-the-ultimate.org/node/1333\" rel=\"noreferrer\">this</a> discussion on LtU and the associated links.  It <em>may</em> be a feature in the upcoming version 7, but apparently it presents certain difficulties when combined with Stack Inspection since certain frames would be missing.  Stack Inspection has been used to implement their fine-grained security model since Java 2.</p><p><a href=\"http://lambda-the-ultimate.org/node/1333\" rel=\"noreferrer\">http://lambda-the-ultimate.org/node/1333</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "lambda-the-ultimate.org"
+  },
+  {
+   "id": "http://lambda-the-ultimate.org/node/1333",
+   "properties": {
+    "节点序号": 82,
+    "类型": "external-link",
+    "out_degree": 0,
+    "in_degree": 2,
+    "body": "<p>I believe tail recursion in java is not currently optimized.  The details are sprinkled throughout <a href=\"http://lambda-the-ultimate.org/node/1333\" rel=\"noreferrer\">this</a> discussion on LtU and the associated links.  It <em>may</em> be a feature in the upcoming version 7, but apparently it presents certain difficulties when combined with Stack Inspection since certain frames would be missing.  Stack Inspection has been used to implement their fine-grained security model since Java 2.</p><p><a href=\"http://lambda-the-ultimate.org/node/1333\" rel=\"noreferrer\">http://lambda-the-ultimate.org/node/1333</a></p>"
+   },
+   "isCenter": 0,
+   "labels": "lambda-the-ultimate.org"
+  }
+ ],
+ "links": [
+  {
+   "id": 0,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "34419"
+   },
+   "target": 1
+  },
+  {
+   "id": 1,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "34444"
+   },
+   "target": 2
+  },
+  {
+   "id": 2,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "5756989"
+   },
+   "target": 3
+  },
+  {
+   "id": 3,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "28507116"
+   },
+   "target": 4
+  },
+  {
+   "id": 4,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "31914707"
+   },
+   "target": 5
+  },
+  {
+   "id": 5,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "32479072"
+   },
+   "target": 8
+  },
+  {
+   "id": 6,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "32593355"
+   },
+   "target": 9
+  },
+  {
+   "id": 7,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "33122745"
+   },
+   "target": 14
+  },
+  {
+   "id": 8,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "36870883"
+   },
+   "target": 15
+  },
+  {
+   "id": 9,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "38383004"
+   },
+   "target": 16
+  },
+  {
+   "id": 10,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "38614741"
+   },
+   "target": 17
+  },
+  {
+   "id": 11,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "38879739"
+   },
+   "target": 18
+  },
+  {
+   "id": 12,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "40467093"
+   },
+   "target": 22
+  },
+  {
+   "id": 13,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "44632379"
+   },
+   "target": 23
+  },
+  {
+   "id": 14,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "46925897"
+   },
+   "target": 25
+  },
+  {
+   "id": 15,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "47553351"
+   },
+   "target": 26
+  },
+  {
+   "id": 16,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "48615116"
+   },
+   "target": 27
+  },
+  {
+   "id": 17,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "49601683"
+   },
+   "target": 28
+  },
+  {
+   "id": 18,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "52544691"
+   },
+   "target": 30
+  },
+  {
+   "id": 19,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "53616950"
+   },
+   "target": 31
+  },
+  {
+   "id": 20,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "55504952"
+   },
+   "target": 32
+  },
+  {
+   "id": 21,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "57379534"
+   },
+   "target": 33
+  },
+  {
+   "id": 22,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "58654225"
+   },
+   "target": 34
+  },
+  {
+   "id": 23,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "60383482"
+   },
+   "target": 35
+  },
+  {
+   "id": 24,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "60467618"
+   },
+   "target": 36
+  },
+  {
+   "id": 25,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "61825298"
+   },
+   "target": 37
+  },
+  {
+   "id": 26,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "63427546"
+   },
+   "target": 38
+  },
+  {
+   "id": 27,
+   "source": 0,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "34413",
+    "目标节点": "64129484"
+   },
+   "target": 39
+  },
+  {
+   "id": 28,
+   "source": 4,
+   "type": "4",
+   "properties": {
+    "源节点": "28507116",
+    "目标节点": "5756989"
+   },
+   "target": 3
+  },
+  {
+   "id": 38,
+   "source": 22,
+   "type": "4",
+   "properties": {
+    "源节点": "40467093",
+    "目标节点": "3700459"
+   },
+   "target": 40
+  },
+  {
+   "id": 39,
+   "source": 40,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "3700459",
+    "目标节点": "3700576"
+   },
+   "target": 41
+  },
+  {
+   "id": 40,
+   "source": 40,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "3700459",
+    "目标节点": "3701218"
+   },
+   "target": 42
+  },
+  {
+   "id": 41,
+   "source": 40,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "3700459",
+    "目标节点": "3716031"
+   },
+   "target": 43
+  },
+  {
+   "id": 42,
+   "source": 40,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "3700459",
+    "目标节点": "3718555"
+   },
+   "target": 44
+  },
+  {
+   "id": 43,
+   "source": 40,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "3700459",
+    "目标节点": "3735938"
+   },
+   "target": 45
+  },
+  {
+   "id": 44,
+   "source": 40,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "3700459",
+    "目标节点": "3739125"
+   },
+   "target": 46
+  },
+  {
+   "id": 45,
+   "source": 40,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "3700459",
+    "目标节点": "4275188"
+   },
+   "target": 47
+  },
+  {
+   "id": 46,
+   "source": 40,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "3700459",
+    "目标节点": "24468790"
+   },
+   "target": 49
+  },
+  {
+   "id": 47,
+   "source": 40,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "3700459",
+    "目标节点": "40878173"
+   },
+   "target": 53
+  },
+  {
+   "id": 50,
+   "source": 32,
+   "type": "4",
+   "properties": {
+    "源节点": "55504952",
+    "目标节点": "8884818"
+   },
+   "target": 54
+  },
+  {
+   "id": 51,
+   "source": 54,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "8884818",
+    "目标节点": "8885905"
+   },
+   "target": 55
+  },
+  {
+   "id": 52,
+   "source": 54,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "8884818",
+    "目标节点": "8958810"
+   },
+   "target": 56
+  },
+  {
+   "id": 53,
+   "source": 54,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "8884818",
+    "目标节点": "34336092"
+   },
+   "target": 57
+  },
+  {
+   "id": 54,
+   "source": 42,
+   "type": "1",
+   "properties": {
+    "源节点": "3701218",
+    "目标节点": "105834"
+   },
+   "target": 60
+  },
+  {
+   "id": 55,
+   "source": 60,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "105834",
+    "目标节点": "105897"
+   },
+   "target": 61
+  },
+  {
+   "id": 56,
+   "source": 60,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "105834",
+    "目标节点": "106119"
+   },
+   "target": 65
+  },
+  {
+   "id": 57,
+   "source": 60,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "105834",
+    "目标节点": "267496"
+   },
+   "target": 68
+  },
+  {
+   "id": 58,
+   "source": 60,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "105834",
+    "目标节点": "1016061"
+   },
+   "target": 69
+  },
+  {
+   "id": 59,
+   "source": 60,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "105834",
+    "目标节点": "4325606"
+   },
+   "target": 71
+  },
+  {
+   "id": 64,
+   "source": 54,
+   "type": "4",
+   "properties": {
+    "源节点": "8884818",
+    "目标节点": "4255826"
+   },
+   "target": 73
+  },
+  {
+   "id": 65,
+   "source": 73,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "4255826",
+    "目标节点": "4255827"
+   },
+   "target": 74
+  },
+  {
+   "id": 66,
+   "source": 73,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "4255826",
+    "目标节点": "19513243"
+   },
+   "target": 78
+  },
+  {
+   "id": 67,
+   "source": 73,
+   "type": "Q-A",
+   "properties": {
+    "源节点": "4255826",
+    "目标节点": "21076551"
+   },
+   "target": 79
+  },
+  {
+   "id": 71,
+   "source": 61,
+   "type": "0",
+   "properties": {
+    "源节点": "105897",
+    "目标节点": "72522"
+   },
+   "target": 80
+  },
+  {
+   "id": 29,
+   "source": 5,
+   "type": "2",
+   "properties": {
+    "源节点": "31914707",
+    "目标节点": "http://en.wikipedia.org/wiki/spring_framework"
+   },
+   "target": 6
+  },
+  {
+   "id": 30,
+   "source": 5,
+   "type": "2",
+   "properties": {
+    "源节点": "31914707",
+    "目标节点": "http://en.wikipedia.org/wiki/apache_maven"
+   },
+   "target": 7
+  },
+  {
+   "id": 31,
+   "source": 9,
+   "type": "2",
+   "properties": {
+    "源节点": "32593355",
+    "目标节点": "https://en.wikipedia.org/wiki/classpath_%28java%29#setting_the_path_to_execute_java_programs"
+   },
+   "target": 10
+  },
+  {
+   "id": 32,
+   "source": 9,
+   "type": "3",
+   "properties": {
+    "源节点": "32593355",
+    "目标节点": "https://i.stack.imgur.com/xozae.png"
+   },
+   "target": 11
+  },
+  {
+   "id": 33,
+   "source": 9,
+   "type": "3",
+   "properties": {
+    "源节点": "32593355",
+    "目标节点": "https://i.stack.imgur.com/cm8gu.png"
+   },
+   "target": 12
+  },
+  {
+   "id": 34,
+   "source": 9,
+   "type": "3",
+   "properties": {
+    "源节点": "32593355",
+    "目标节点": "https://i.stack.imgur.com/cm8gu.png"
+   },
+   "target": 12
+  },
+  {
+   "id": 35,
+   "source": 18,
+   "type": "1",
+   "properties": {
+    "源节点": "38879739",
+    "目标节点": "https://i.stack.imgur.com/bdvno.gif"
+   },
+   "target": 19
+  },
+  {
+   "id": 36,
+   "source": 18,
+   "type": "3",
+   "properties": {
+    "源节点": "38879739",
+    "目标节点": "https://javarevisited.blogspot.com/2011/06/noclassdeffounderror-exception-in.html"
+   },
+   "target": 20
+  },
+  {
+   "id": 37,
+   "source": 18,
+   "type": "2",
+   "properties": {
+    "源节点": "38879739",
+    "目标节点": "http://javaeesupportpatterns.blogspot.in/2011/08/javalangnoclassdeffounderror-problem.html"
+   },
+   "target": 21
+  },
+  {
+   "id": 48,
+   "source": 23,
+   "type": "2",
+   "properties": {
+    "源节点": "44632379",
+    "目标节点": "https://logging.apache.org/log4j/2.x/manual/migration.html"
+   },
+   "target": 24
+  },
+  {
+   "id": 49,
+   "source": 28,
+   "type": "2",
+   "properties": {
+    "源节点": "49601683",
+    "目标节点": "http://sdkman.io/"
+   },
+   "target": 29
+  },
+  {
+   "id": 60,
+   "source": 47,
+   "type": "1",
+   "properties": {
+    "源节点": "4275188",
+    "目标节点": "http://threebrothers.org/brendan/blog/stirlings-approximation-formula-clojure/"
+   },
+   "target": 48
+  },
+  {
+   "id": 61,
+   "source": 49,
+   "type": "2",
+   "properties": {
+    "源节点": "24468790",
+    "目标节点": "https://class.coursera.org/progfun-004/assignment/view?assignment_id=17"
+   },
+   "target": 50
+  },
+  {
+   "id": 62,
+   "source": 49,
+   "type": "2",
+   "properties": {
+    "源节点": "24468790",
+    "目标节点": "http://mitpress.mit.edu/sicp/full-text/sicp/book/node16.html"
+   },
+   "target": 51
+  },
+  {
+   "id": 63,
+   "source": 49,
+   "type": "2",
+   "properties": {
+    "源节点": "24468790",
+    "目标节点": "http://c2.com/cgi/wiki?sicpiterationexercise"
+   },
+   "target": 52
+  },
+  {
+   "id": 68,
+   "source": 57,
+   "type": "2",
+   "properties": {
+    "源节点": "34336092",
+    "目标节点": "https://i.stack.imgur.com/werck.jpg"
+   },
+   "target": 58
+  },
+  {
+   "id": 69,
+   "source": 57,
+   "type": "2",
+   "properties": {
+    "源节点": "34336092",
+    "目标节点": "https://i.stack.imgur.com/werck.jpg"
+   },
+   "target": 58
+  },
+  {
+   "id": 72,
+   "source": 61,
+   "type": "2",
+   "properties": {
+    "源节点": "105897",
+    "目标节点": "https://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm"
+   },
+   "target": 62
+  },
+  {
+   "id": 73,
+   "source": 61,
+   "type": "3",
+   "properties": {
+    "源节点": "105897",
+    "目标节点": "http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4726340"
+   },
+   "target": 63
+  },
+  {
+   "id": 74,
+   "source": 61,
+   "type": "2",
+   "properties": {
+    "源节点": "105897",
+    "目标节点": "http://openjdk.java.net/projects/mlvm/subprojects.html"
+   },
+   "target": 64
+  },
+  {
+   "id": 75,
+   "source": 65,
+   "type": "2",
+   "properties": {
+    "源节点": "106119",
+    "目标节点": "http://blogs.oracle.com/jrose/entry/tail_calls_in_the_vm"
+   },
+   "target": 66
+  },
+  {
+   "id": 76,
+   "source": 65,
+   "type": "2",
+   "properties": {
+    "源节点": "106119",
+    "目标节点": "http://openjdk.java.net/projects/mlvm/"
+   },
+   "target": 67
+  },
+  {
+   "id": 77,
+   "source": 69,
+   "type": "2",
+   "properties": {
+    "源节点": "1016061",
+    "目标节点": "http://blog.richdougherty.com/2009/04/tail-calls-tailrec-and-trampolines.html"
+   },
+   "target": 70
+  },
+  {
+   "id": 78,
+   "source": 71,
+   "type": "2",
+   "properties": {
+    "源节点": "4325606",
+    "目标节点": "http://books.google.ca/books?id=iphtcfzqyqqc&amp;printsec=frontcover&amp;dq=java%20performance%20tuning&amp;hl=en&amp;ei=ggh2torfm4sklwft0ozvbq&amp;sa=x&amp;oi=book_result&amp;ct=result&amp;resnum=1&amp;ved=0cdaq6aewaa#v=onepage&amp;q&amp;f=false"
+   },
+   "target": 72
+  },
+  {
+   "id": 79,
+   "source": 74,
+   "type": "2",
+   "properties": {
+    "源节点": "4255827",
+    "目标节点": "http://www.coderanch.com/t/448061/vc/eclipse-project-jar-will-not"
+   },
+   "target": 75
+  },
+  {
+   "id": 80,
+   "source": 74,
+   "type": "3",
+   "properties": {
+    "源节点": "4255827",
+    "目标节点": "http://web.archive.org/web/20120825092050/http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx"
+   },
+   "target": 76
+  },
+  {
+   "id": 81,
+   "source": 74,
+   "type": "2",
+   "properties": {
+    "源节点": "4255827",
+    "目标节点": "http://devpinoy.org/blogs/lamia/archive/2008/01/03/deploying-your-jar-with-your-war-in-eclipse.aspx"
+   },
+   "target": 77
+  },
+  {
+   "id": 82,
+   "source": 80,
+   "type": "2",
+   "properties": {
+    "源节点": "72522",
+    "目标节点": "http://lambda-the-ultimate.org/node/1333"
+   },
+   "target": 81
+  },
+  {
+   "id": 83,
+   "source": 80,
+   "type": "2",
+   "properties": {
+    "源节点": "72522",
+    "目标节点": "http://lambda-the-ultimate.org/node/1333"
+   },
+   "target": 81
+  }
+ ]
+}
