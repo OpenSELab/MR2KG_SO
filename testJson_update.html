@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>chart</title>
+</head>
+<body>
+
+
+    <div id="box">
+        <input id = "searchbox" type="search" name="search" placeholder="Please input the keywords">
+        <button id="searchbutton" type="button" font-size = "16px">Search</button>
+        <span >
+            <text id="extendoption" font-size = "12px">Expand the global knowledge graph</text>
+        </span>
+    </div>
+    <div class="wrap">
+        <div id="d3Box"></div>
+        <div id="textBox"></div>
+    </div>
+
+
+
+    <style>
+        button{
+            font-size: 16px;
+            background-color: #A5ABB6;
+            color: white;
+            padding: 10px 20px;
+        }
+        input{
+          margin: auto;
+          width: 30%;
+          box-sizing: border-box;
+          border: 2px solid #ccc;
+          border-radius: 4px;
+          font-size: 16px;
+          background-color: white;
+          background-image: url('http://static.runoob.com/images/mix/searchicon.png');
+          background-position: 10px 10px;
+          background-repeat: no-repeat;
+          padding: 12px 20px 12px 40px;
+        }
+        .wrap{
+            display: flex;
+            align-items: center;
+        }
+        #d3Box{
+            width: 50%;
+            flex-shrink: 0;
+        }
+        </style>
+    <!-- <script src="https://d3js.org/d3.v4.min.js"></script> -->
+
+    <script type='text/javascript' src="d3.js" charset="utf-8"></script>
+    <script>
+
+
+
+            // 定义画布 （radius是鼠标点击生成圆形分区图的半径）
+            var width = 1000, height = 700;
+            var color = d3.scale.category20();
+            var svg_edges, svg_nodes, svg_text, svg_text_edges, svg_markers; // 需要动态更新的函数(dynamic update function)
+            var force, nodes = [], edges = [], rawNodes = [] , rawEdges = []; // 构建知识图谱需要操作的数据 (rawNodes, rawEdges将加载的原始构图数据缓存一份)
+            var centerNode;//中心节点
+            // var color = d3.scaleOrdinal()
+            //         .range(d3.schemeCategory20);
+            var svg = d3.select("#d3Box")
+                .append("svg")
+                .attr("id", "svgGraph")
+                .attr("width", width)
+                .attr("height", height)
+                .call(d3.behavior.zoom() // 自动创建事件侦听器
+                    .scaleExtent([0.1, 10]) // 缩放允许的级数
+                    .on("zoom", zoom)
+                )
+                .on("dblclick.zoom", null) // remove双击缩放
+                .append("g")
+                .attr("id", "svgOne");
+            //监听搜索框
+            d3.select("#searchbutton")
+                .on("click",function(){
+                    var v = document.getElementById("searchbox").value;
+                    console.log("输入搜索内容："+v);
+                    add_search(v);
+                });
+            //展开全局图谱
+            d3.select("#extendoption")
+                .on("click",function(){
+                    showALL();
+                });
+            // 实时获取SVG画布坐标
+            function printPosition() {
+                var position = d3.mouse(svg.node());
+                return position;
+            }
+            // 缩放函数
+            function zoom() {
+                // translate变换矢量（使用二元组标识）scale当前尺度的数字
+                svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")"); // 画布缩放与移动
+                // svg.attr("transform", "scale(" + d3.event.scale + ")"); // 画布缩放
+            }
+            // 设置连线箭头属性
+            function setMarkers() {
+                svg_markers =svg.append("g")
+                    .attr("id", "lineMarkers")
+                    .selectAll("marker")
+                    .data(edges)
+                    .enter()
+                    .append("marker");
+                svg_markers.attr("id", function (d) {
+                        return d.index;
+                    })
+                    .attr("viewBox", "0 -5 10 10") // 坐标系的区域
+                    .attr("class", "arrow")
+                    //refX,refY指定marker中的哪个坐标与路径的开始坐标对齐
+                    .attr("refX", 27) // refX,refY在viewBox内的基准点，绘制时此点在直线端点上（要注意大小写）
+                    .attr("refY", 0)
+                    .attr("markerWidth", 5) // 标识的大小
+                    .attr("markerHeight", 10) // 标识的大小
+                    .attr("markerUnits", "userSpaceOnUse") // 标识大小的基准，有两个值：strokeWidth（线的宽度）和userSpaceOnUse（图形最前端的大小）
+                    .attr("orient", "auto") // 绘制方向，可设定为：auto（自动确认方向）和 角度值
+                    .append("path")
+                    .attr("d", "M0,-5L10,0L0,5")
+                    .attr("fill", "#ccc");
+                return svg_markers;
+            }
+            // 生成关系连线路径
+            function genLinkPath(link) {
+                let sx = link.source.x;
+                let tx = link.target.x;
+                let sy = link.source.y;
+                let ty = link.target.y;
+                return 'M' + sx + ',' + sy + ' L' + tx + ',' + ty;
+            }
+            // 添加连线
+            function add_edges() {
+                setMarkers(); // 设置连线箭头属性
+                var svg_edges = svg.append('g')
+                    .attr("id","lineAndText")
+                    .selectAll("line")
+                    .data(edges)
+                    .enter()
+                    .append("line")
+                    .attr("id", function (d) {
+                        return "edge"+d.index;
+                    })
+                    .style("stroke", function (d) {
+                        if(d.Type2 == "Question-answer"){
+                            return "#00331A"
+                        }
+                        else if(d.Type2 == "Question-answer2"){
+                            return "#00AB57"
+                        }
+                        else if(d.Type2 == "coupling"){
+                            if (d.type == "0")
+                                return "#999900"
+                            else if (d.type == "1")
+                                return "#C5C000"
+                            else if (d.type == "2")
+                                return "#D7D200"
+                            else if (d.type == "3")
+                                return "#EBEB00"
+                            else
+                                return "#FFFF01"
+                        }
+                        else if(d.Type2 == "completeness"){
+                            if (d.type == "0")
+                                return "#663300"
+                            else if (d.type == "1")
+                                return "#824100"
+                            else if (d.type == "2")
+                                return "#A85400"
+                            else if (d.type == "3")
+                                return "#CC6600"
+                            else
+                                return "#EE7700"
+                        }
+                        else{
+                            return "#EE7700"
+                        }
+                    })    //关系连线颜色设置
+                    .style("stroke-width", 1.5)
+                    .attr("marker-end", function (d) {
+                        return "url(#" + d.index + ")";
+                    })
+                    .attr("d", edges => genLinkPath(edges))
+                    .attr("stroke", "#999");    //什么设置？
+                return svg_edges;
+            }
+            // 添加描述关系文字
+            function add_text_edges() {
+                var svg_text_edges = svg.select("#lineAndText")
+                    .selectAll("text")
+                    .data(edges)
+                    .enter()
+                    .append("text")
+                    .attr("id", function (d) {
+                        return d.index;
+                    })
+                    .style("fill", "#ccc")
+                    .style("font-size", 7)
+                    .text(function (d) {
+                        return d.type;
+                    })
+                    .attr('text-anchor', 'middle')
+                    .attr("x", function (d) {
+                        return (d.source.x + d.target.x) / 2
+                    })
+                    .attr("y", function (d) {
+                        return (d.source.y + d.target.y) / 2
+                    });
+                return svg_text_edges;
+            }
+            // 求直线与圆的交点
+            // 函数参数说明:cx:圆X轴坐标 cy:圆y轴坐标  r:圆半径 stx:起点直线的X轴坐标 sty:起点直线的轴坐标 edx:终点直线的X轴坐标 edy:终点直线的Y轴坐标
+            // 返回值:交点坐标(x,y)
+            function getPoint(cx, cy, r, stx, sty, edx, edy) {
+                // 求直线
+                var k = (edy - sty) / (edx - stx);
+                var b = edy - k * edx;
+                //列方程
+                var x1, y1, x2, y2;
+                var c = cx * cx + (b - cy) * (b - cy) - r * r;
+                var a = (1 + k * k);
+                var b1 = (2 * cx - 2 * k * (b - cy));
+
+                var tmp = Math.sqrt(b1 * b1 - 4 * a * c);
+                x1 = (b1 + tmp) / (2 * a);
+                y1 = k * x1 + b;
+                x2 = (b1 - tmp) / (2 * a);
+                y2 = k * x2 + b;
+
+                // 过滤距离最近的坐标
+                var p = {};
+
+                function lineIf(lx, ly, lxx, lyy) {
+                    var d = Math.sqrt((lx - lxx) * (lx - lxx) + (ly - lyy) * (ly - lyy));
+                    return d;
+                }
+
+                if (cx != stx) { // stx, sty
+                    var d1 = lineIf(x1, y1, stx, sty);
+                    var d2 = lineIf(x2, y2, stx, sty);
+                    if (d1 < d2) {
+                        p.x = x1;
+                        p.y = y1;
+                    } else {
+                        p.x = x2;
+                        p.y = y2;
+                    }
+                } else { // edx, edy
+                    var d1 = lineIf(x1, y1, edx, edy);
+                    var d2 = lineIf(x2, y2, edx, edy);
+                    if (d1 < d2) {
+                        p.x = x1;
+                        p.y = y1;
+                    } else {
+                        p.x = x2;
+                        p.y = y2;
+                    }
+                }
+                return p;
+            }
+
+            function findCenterPath(){
+                var lost = [];
+                for(var i = 0; i < Hnodes.length; i++){
+                    var flag1 = 0;
+                    var flag2 = 0;
+                    dfs(centerNode,Hnodes[i]);
+                    getPath();
+                    if(paths.length > 0){
+                        flag1 = 1;
+                    }
+                    dfs(Hnodes[i],centerNode);
+                    getPath();
+                    if(paths.length > 0){
+                        flag2 = 1;
+                    }
+                    if(flag1 == 0 && flag2 == 0){
+                        lost.push(Hnodes[i]);
+                    }
+                }
+                console.log("孤单的点：");
+                console.log(lost);
+                var tmp = [];
+                tmp = tmp.concat(Fnodes);
+                tmp = tmp.concat(Hnodes);
+                for(var i = 0; i< lost.length; i++){
+                    for(var j = 0; j < tmp.length; j++){
+                        dfs(lost[i],tmp[j]);
+                        getPath();
+                        dfs(tmp[j],lost[i]);
+                        getPath();
+                    }
+                }
+
+            }
+
+
+
+            function prepareData(){
+                for(var i = 0; i < nodes.length; i++){
+                    visited[i] = 0;
+                    var tmp = new Array(nodes.length).fill(0);
+                    tmp[i] = 1;//d[i][i] = 1
+                    for(var j = 0; j < edges.length; j++){
+                        if(edges[j].source.id == nodes[i].id){
+                            var index = nodes.indexOf(edges[j].target);
+                            tmp[index] = 1;
+                        }
+                    }
+                    d.push(tmp);
+                }
+                // console.log("邻接矩阵 行数："+d.length);
+                // var count = 0;
+                // for(var i = 0; i < nodes.length; i++){
+                //     for(var j = 0; j < nodes.length; j++){
+                //         if(d[i][j] == 1 && i != j){
+                //             count++;
+                //             console.log(i+" -> "+j);
+                //         }
+                //     }
+                // }
+                // console.log("总边数："+count);
+            }
+
+            var d = new Array(nodes.length);//邻接矩阵
+            var visited = [];//记录是否在栈中
+            var stack = [];
+            var paths = [];
+            var path = [];
+
+            function dfs(start,end){
+                paths.length = 0;
+                path.length = 0;
+                stack.length = 0;
+                for(var k = 0; k < nodes.length; k++){
+                    visited[k] = 0;
+                }
+                var pos = -1; //记录上一次遍历到的位置
+                var st = nodes.indexOf(start);
+                var ed = nodes.indexOf(end);
+                visited[st] = 1;
+                stack.push(st);
+                while(stack.length > 0){
+                    var top = stack[stack.length - 1];
+                    if(top == ed){ //到达终点
+                        //输出路径
+                        path = path.concat(stack);
+                        paths.push(path);
+                        path = [];
+                        stack.pop();
+                        visited[top] = 0;
+
+                        pos = top;
+
+                    }
+                    else{
+                        var i = 0;
+                        for(var i = pos+1; i < nodes.length; i++){
+                            if(d[top][i] != 0 && visited[i] == 0){
+                                visited[i] = 1;
+                                stack.push(i);
+                                pos = -1;
+                                break;
+                            }
+                        }
+                        if(i == nodes.length){//遍历完一行结束
+                            top = stack.pop();
+                            pos = top;
+                            visited[top] = 0;
+                        }
+                    }
+                }
+                // console.log("找到的路径：");
+                // for(var k = 0; k < paths.length; k++){
+                //     console.log(paths[k]);
+                // }
+            }
+
+            function getPath(){
+                for(var i = 0; i < paths.length; i++){
+                    for(var j = 0; j < paths[i].length; j++){
+                        var index = paths[i][j];
+                        if(!Fnodes.includes(nodes[index])){
+                            Fnodes.push(nodes[index]);
+                        }
+                    }
+                }
+            }
+
+            var Hnodes = [], Hedges = [];//查询结果的节点和边
+            var Fnodes = [];
+            //求中心点到所有查询结果点的路径，将路径上的点和边加入Fnodes Fedges
+            function add_search(c){
+                Hnodes.length = 0;
+                Hedges.length = 0;
+                Fnodes.length = 0;
+                if(c == ""){//c为空
+                    d3.select("#svgGraph").select("#svgOne").selectAll("*").remove(); // 清空SVG中的内容
+                    buildGraph();
+                }
+                else {
+                    var pattr = "/"+c+"/i";//正则表达式 i表示不区分大小写
+                    for(var i = 0; i < nodes.length; i++){
+                        var str = nodes[i].properties.body;
+                        //console.log("str:"+str);
+                        var rst = str.match(eval(pattr));//match函数正则表达式参数不能是字符串，eval函数将字符串转为正则式
+                        if(rst != null){
+                            console.log("搜索结果Hnodes： "+i);
+                            console.log(nodes[i]);
+                            Hnodes.push(nodes[i]);
+                        }
+                    }
+
+                    prepareData();
+                    findCenterPath();
+
+                    console.log("Fnodes:");
+                    console.log(Fnodes);
+
+                    setNodeOpacity();
+                    setEdgeOpacity();
+                }
+            }
+            //设置选中节点的突出显示
+            function setNodeOpacity(){
+                d3.select("#svgGraph").select("#svgOne").selectAll("*").remove(); // 清空SVG中的内容
+                buildGraph();
+
+                for(var k = 0; k < Hnodes.length; k++){
+                    if( ! Fnodes.includes(Hnodes[k])){
+                        Fnodes.push(Hnodes[k]);
+                    }
+                }
+                if( ! Fnodes.includes(centerNode)){
+                    Fnodes.push(centerNode);
+                }
+                svg_nodes.attr("opacity", function(d){
+                            if(Fnodes.includes(d)){
+                                return 1;
+                            }
+                            else return 0.2;
+                        })
+                svg_nodes.selectAll("circle")
+                        .attr("r" , function(d){
+                            if(Fnodes.includes(d)){
+                                return 15;
+                            }
+                            else return 10;
+                        });
+                svg_nodes.selectAll("text")
+                        .style("font-size",function(d){
+                            if(Fnodes.includes(d)){
+                                return 10;
+                            }
+                            else return 8;
+                        });
+
+                var arcDataTemp = [{startAngle: 0, endAngle: 2 * Math.PI}];
+                var arc_temp = d3.svg.arc().outerRadius(19).innerRadius(15);
+                //设置结果节点的突出显示
+                d3.select("#circleAndText").selectAll("g")
+                        .data(nodes)
+                        .append("g")
+                        .attr("id", "sel")
+                        .attr("opacity", function(d){
+                            if(Hnodes.includes(d)){
+                                return 1;
+                            }
+                            else return 0;
+                        })
+                        .selectAll("path.arc")
+                        .data(arcDataTemp)
+                        .enter()
+                        .append("path")
+                        .attr("transform", function(d){
+                            return "translate(" + d.x + "," + d.y + ")";
+                        })
+                        .attr("fill", "#87CEFA")
+                        .attr("d", function (d, i) {
+                            return arc_temp(d, i);
+                        });
+
+
+            }
+            //设置边的突出显示
+            function setEdgeOpacity(){
+                for(var i = 0; i < edges.length; i++){
+                    var source = edges[i].source;
+                    var target = edges[i].target;
+                    if(Fnodes.includes(source) && Fnodes.includes(target)){
+                        Hedges.push(edges[i]);
+                    }
+                }
+                console.log("包含的边：");
+                console.log(Hedges);
+
+                svg_edges.attr("opacity", function(d){
+                            if(Hedges.includes(d)){
+                                return 1;
+                            }
+                            else return 0.2;
+                        })
+                        .style("stroke",function(d){
+                            if(Hedges.includes(d)){
+                                return "black";
+                            }
+                            else {
+                                return "#ccc";
+                            }
+                        })
+                        .style("stroke-width",function(d){
+                            if(Hedges.includes(d)){
+                                return 3;
+                            }
+                            else {
+                                return 1.5;
+                            }
+                        });
+                svg_text_edges.attr("opacity", function(d){
+                                if(Hedges.includes(d)){
+                                    return 1;
+                                }
+                                else return 0.2;
+                            })
+                            .style("fill",function(d){
+                                if(Hedges.includes(d)){
+                                    return "black";
+                                }
+                                else {
+                                    return "#ccc";
+                                }
+                            })
+                            .style("font-size",function(d){
+                                if(Hedges.includes(d)){
+                                    return 8;
+                                }
+                                else{
+                                    return 7;
+                                }
+                            });
+
+                svg_markers.attr("refX", function(d){
+                                if(Hedges.includes(d)){
+                                    return 28;
+                                }
+                                else{
+                                    return 27;
+                                }
+                        }) // refX,refY在viewBox内的基准点，绘制时此点在直线端点上（要注意大小写）
+                        .attr("markerWidth",function(d){
+                                if(Hedges.includes(d)){
+                                    return 8;
+                                }
+                                else{
+                                    return 5;
+                                }
+                        }) // 标识的大小
+                        .attr("markerHeight", function(d){
+                                if(Hedges.includes(d)){
+                                    return 15;
+                                }
+                                else{
+                                    return 10;
+                                }
+                        }) // 标识的大小
+                        .attr("markerUnits", "userSpaceOnUse") // 标识大小的基准，有两个值：strokeWidth（线的宽度）和userSpaceOnUse（图形最前端的大小）
+                        .attr("orient", "auto") // 绘制方向，可设定为：auto（自动确认方向）和 角度值
+                        .selectAll("path")
+                        .attr("d", "M0,-5L10,0L0,5")
+                        .attr("fill", function(d){
+                            if(Hedges.includes(d)){
+                                    return "black";
+                                }
+                                else{
+                                    return "#ccc";
+                            }
+                        });
+            }
+
+            //一键展开所有节点
+            function showALL(){
+                nodes.length = 0;
+                edges.length = 0;
+                nodes = nodes.concat(rawNodes);
+                edges = edges.concat(rawEdges);
+                d3.select("#svgGraph").select("#svgOne").selectAll("*").remove(); // 清空SVG中的内容
+                buildGraph();
+            }
+            // 添加节点
+            var dblclicked = false;
+            function add_nodes() {
+                var isDragging = false;
+                var clicked = false;
+                var svg_nodes,c,ctexts;
+                svg_nodes = svg.append("g")
+                    .attr("id", "circleAndText")
+                    .selectAll("g")
+                    .data(nodes)
+                    .enter()
+                    .append("g")
+                    .call(force.drag()
+                            .on("dragstart", function (d) {
+                                isDragging = true;
+                                d3.event.sourceEvent.stopPropagation(); // 画布拖动与节点拖动分离
+                                //d3.select(this).attr("r", 10);
+                            })
+                            .on("drag",function (d) {
+                                isDragging = true;
+                                d3.select(this)
+                                    .attr('cx', d.x = d3.event.x)
+                                    .attr('cy', d.y = d3.event.y);
+                            })
+                            .on("dragend", function (d) {
+                                isDragging = false;
+                                d.fixed = true; // 拖动结束后节点固定
+                                //d3.select(this).attr("r", 10);
+                            })
+                    )
+                    .on("dblclick", nodes=>doubleClick(nodes))
+                    .on("click",function(d){//鼠标悬停触发
+                        d3.select("#tooltip").remove();
+                        addToolTip(d); //添加提示框的div
+                    });
+
+                c = svg_nodes.append("circle")
+                    .attr("id", function (d) {
+                        return d.index;
+                    })
+                    .attr("r", 10)
+                    .attr("fill", function (d) {    //节点填充设置颜色
+                        if(d.isCenter == 1){
+                            return "#ffffff"
+                        }
+                        else if(d.properties.Type == "hierarchy"){
+                            return "#000099"//"#1f77b4"
+                        }
+                        else if(d.properties.类型 == "Coupling"){
+                            return "#0000FF";//"#4169e1";
+                        }
+                        else {
+                            return "#99CCFF";
+                        }
+                    })
+                    .attr("stroke","grey")  //节点边框设置颜色
+                    .attr("stroke-width",0.8);
+
+                ctexts = svg_nodes.append("svg:text")
+                    .style("fill", function(d){
+                        return "black";
+                    })
+                    .attr("dx", c.attr("cx"))
+                    .attr("dy", c.attr("cy")+2)
+                    .attr("text-anchor","middle")
+                    .attr("font-size",8)
+                    .text(function (d) {
+                        return d.labels;
+                    });
+                return svg_nodes;
+            }
+            //添加提示框的div
+            function addToolTip(d) {
+                var htmlStr;
+                if(d.labels){
+                    htmlStr = "";
+                }
+                htmlStr = htmlStr + "Type:" + JSON.stringify(d.properties.类型) +",out-degree:" + JSON.stringify(d.properties.out_degree) + ",in-degree:" + JSON.stringify(d.properties.in_degree) +",body:" + JSON.stringify(d.properties.body) +"</br>";
+                var position = printPosition(d);
+                var tooltip = d3.select("body").append("div")
+                    .attr("class", "tooltip") //用于css设置类样式
+                    .attr("opacity", 0.0)
+                    .attr("id", "tooltip");
+                htmlStr = htmlStr + "locx:" + position[0] + "<br/>" + "locy:" + position[1] + "<br/>";
+                tooltip.html(htmlStr)
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY + 20) + "px")
+                    .style("opacity", 0.75);
+            }
+            //删除数组指定元素
+            function remove(arr, item) {
+                for(var i = 0; i < arr.length; i++){
+                    if(arr[i] == item){
+                        //从i出开始删除1个元素
+                        arr.splice(i,1);
+                        i--;
+                    }
+                }
+                return arr;
+            }
+            function doubleClick(d){
+                if(dblclicked == false){
+                    dblclicked = true;
+                    console.log("dblclicked = false, 展开"+dblclicked);
+                    extendNode(d);//展开节点
+                }
+                else {
+                    dblclicked = false;
+                    console.log("dblclicked = true, 收缩"+dblclicked);
+                    reduceNodes(d);//收缩节点
+                }
+            }
+
+            //双击事件-隐藏选中节点的所有子孙节点
+            function reduceNodes(d){
+                var temp = [];
+                temp.push(d);
+                while(temp.length > 0){
+                    var n = temp.shift();//dequeue
+                    for(var i = 0; i < edges.length; i++){
+                        if(edges[i].source.index == n.index){
+                            temp.push(edges[i].target);//将所有子孙节点入队,并从nodes中删除这些子孙
+                            nodes = remove(nodes, edges[i].target);
+                            edges.splice(i,1);//删除edges[i]
+                            i--;
+                        }
+                    }
+                }
+                // d3.select("#svgGraph").remove(); // 删除整个SVG
+                d3.select("#svgGraph").select("#svgOne").selectAll("*").remove(); // 清空SVG中的内容
+                buildGraph();
+            }
+
+            // 判断元素是否在ARRAY中
+            function isInArray(arr, value) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (value === arr[i]) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            //  扩展当前节点
+            function extendNode(d) {
+                var index = d.index;
+                var arrEdges = [], arrIndex = [], arrNodes = [];
+                //arrEdges存放与选中节点相关联的边
+                for (var i = 0; i < rawEdges.length; i++) {
+                    if ((index == rawEdges[i].source.index) || (index == rawEdges[i].target.index)) {
+                        arrEdges.push(rawEdges[i]);
+                        if (index != rawEdges[i].source.index) {
+                            arrIndex.push(rawEdges[i].source.index);
+                        } else if (index != rawEdges[i].target.index) {
+                            arrIndex.push(rawEdges[i].target.index);
+                        }
+                    }
+                }
+                //arrNodes存放与选中节点相邻的顶点
+                for (var i = 0; i < rawNodes.length; i++) {
+                    for (var j = 0; j < arrIndex.length; j++) {
+                        var obj = arrIndex[j];
+                        if (rawNodes[i].index == obj) {
+                            arrNodes.push(rawNodes[i]);
+                        }
+                    }
+                }
+                //nodesRemoveIndex[]存放当前选中顶点的相邻点与当前显示的顶点集重复的部分
+                var nodesRemoveIndex = [];
+                for (var i = 0; i < arrNodes.length; i++) {
+                    var obj = arrNodes[i];
+                    for (var j = 0; j < nodes.length; j++) {
+                        var obj2 = nodes[j];
+                        if (obj.index == obj2.index) {
+                            nodesRemoveIndex.push(i);
+                        }
+                    }
+                }
+                //选中顶点的相邻边 与 整个边集中重复的部分
+                var edgesRemoveIndex = [];
+                for (var i = 0; i < arrEdges.length; i++) {
+                    var obj = arrEdges[i];
+                    for (var j = 0; j < edges.length; j++) {
+                        var obj2 = edges[j];
+                        if (obj.index == obj2.index) {
+                            edgesRemoveIndex.push(i);
+                        }
+                    }
+                }
+                //将当前不在顶点集中的相邻顶点存入coverNodes
+                var coverNodes = [];
+                for (var i = 0; i < arrNodes.length; i++) {
+                    var obj = arrNodes[i];
+                    if (!isInArray(nodesRemoveIndex, i)) {
+                        nodes.push(obj);
+                        coverNodes.push(obj);
+                    }
+                }
+                //将当前不在边集中的关联边
+                var coverEdges = [];
+                for (var i = 0; i < arrEdges.length; i++) {
+                    var obj = arrEdges[i];
+                    if (!isInArray(edgesRemoveIndex, i)) {
+                        edges.push(obj);
+                        coverEdges.push(obj);
+                    }
+                }
+                console.log("找出需要扩展的数据");
+                console.log(arrEdges);
+                console.log(arrNodes);
+                console.log("添加到原始数据集");
+                console.log(nodes);
+                console.log(edges);
+
+                // d3.select("#svgGraph").remove(); // 删除整个SVG
+                d3.select("#svgGraph").select("#svgOne").selectAll("*").remove(); // 清空SVG中的内容
+                buildGraph();
+            }
+            var re_line, re_circle, re_cir_text, re_line_text; // 扩展节点同步更新
+
+            // 对于每一个时间间隔进行更新
+            function refresh() {
+                force.on("tick", function () { // 对于每一个时间间隔
+                    // 更新连线坐标·
+                    svg_edges.attr("x1", function (d) {
+                        return d.source.x;
+                    })
+                        .attr("y1", function (d) {
+                            return d.source.y;
+                        })
+                        .attr("x2", function (d) {
+                            return d.target.x;
+                        })
+                        .attr("y2", function (d) {
+                            return d.target.y;
+                        });
+                    // 更新节点以及文字坐标
+                    svg_nodes.attr("transform", function (d) {
+                        return "translate(" + d.x + "," + d.y + ")";
+                    });
+                    // 更新关系文字坐标
+                    svg_text_edges.attr("x", function (d) {
+                            return (d.source.x + d.target.x) / 2
+                        })
+                        .attr("y", function (d) {
+                            return (d.source.y + d.target.y) / 2
+                        });
+
+                });
+            }
+
+            // 知识图谱可视化构建
+            function graph(data) {
+                // 定义力布局（数据转换）
+                nodes = nodes.concat(data.nodes); // 多数组连接
+                edges = edges.concat(data.links);
+                rawNodes = rawNodes.concat(nodes);
+                rawEdges = rawEdges.concat(edges);
+                for (var i = 0; i < edges.length; i++) { // 关系数据添加INDEX值（为了方便对应图形元素）
+                    var obj = edges[i];
+                    obj.index = i;
+                    //考虑孩子数量大的情况，每次显示ShowBeginIdx开始的20个孩子
+                }
+                force = d3.layout.force()
+                    .nodes(nodes) // 指定节点数组
+                    .links(edges) // 指定连线数组
+                    .size([width, height]) // 指定范围
+                    .linkDistance(50) // 指定连线长度
+                    .gravity(0.3) // 设置引力避免跃出布局
+                    .friction(0.5) // 设置摩擦力速度衰减
+                    .charge(-700) ;// 相互之间的作用力
+                force.start(); // 开始作用
+                selectRoot();
+                buildGraph();
+            }
+
+            // 选择初始只显示根节点（question节点）
+            function selectRoot(){
+                var nodes1 = [];
+                var edges1 = [];
+                nodes1.push(nodes[0]);
+                nodes1[0].px  = width/2;
+                nodes1[0].py  = height/2;
+                nodes1[0].fixed = true;
+                for(var i = 0; i < nodes.length; i++){
+                    if(nodes[i].isCenter == 1){
+                        centerNode = nodes[i];//存放中心点
+                    }
+                    // if(nodes[i].properties.类型 == "Question"){
+                    //     //设置为居中显示
+                    //     nodes[i].px  = width/2;
+                    //     nodes[i].py  = height/2;
+                    //     nodes1.push(nodes[i]);
+                    // }
+                }
+                nodes = [];
+                edges = [];
+                nodes = nodes.concat(nodes1);
+            }
+
+            // 选择初始只显示根节点
+            //  function selectRoot(){
+            //     var nodes1 = [];
+            //     var edges1 = [];
+            //     nodes1.push(nodes[0]);
+            //     nodes1[0].px  = width/2;
+            //     nodes1[0].py  = height/2;
+            //     nodes1[0].fixed = true;
+            //     nodes = [];
+            //     edges = [];
+            //     nodes = nodes.concat(nodes1);
+            //     edges = edges.concat(edges1);
+            //     console.log("查询节点：");
+            //     console.log(nodes);
+            //     console.log(edges);
+            // }
+
+            //构建可视化图谱
+            function buildGraph() {
+                console.log("开始构建可视化知识图谱.nodes/edges：");
+                console.log(nodes);
+                console.log(edges);
+                console.log("rawNodes edges：");
+                console.log(rawNodes);
+                console.log(rawEdges);
+                force.nodes(nodes)
+                    .links(edges)
+                svg_edges = add_edges(); // 添加连线
+                svg_nodes = add_nodes(); // 添加节点与文字
+                svg_text_edges = add_text_edges(); // 添加描述关系的文字
+                refresh();
+                force.resume(); // 必须添加否则图形元素更新不及时
+            }
+            //加载数据
+            function load() {
+                d3.json("./result.txt", function (error, json) { // 服务器加载知识图谱数据
+                    if (error) {
+                        return console.warn(error);
+                    }
+                    console.log("初始加载：");
+                    console.log(json.nodes);
+                    console.log(json.links);
+                    graph(json);
+                });
+            }
+            load();
+    </script>
+
+    <script>
+                function load_(name) {
+                let xhr = new XMLHttpRequest(),
+                    okStatus = document.location.protocol === "file:" ? 0 : 200;
+                xhr.open('GET', name, false);
+                xhr.overrideMimeType("text/html;charset=utf-8");//默认为utf-8
+                xhr.send(null);
+                return xhr.status === okStatus ? xhr.responseText : null;
+            }
+
+            let text = load_("best_answer.txt");
+
+            console.log(text);  //输出到浏览器控制器中
+
+            document.querySelector('#textBox').innerHTML = text;  //打印在网页中
+
+    </script>
+
+
+</body>
+</html>
