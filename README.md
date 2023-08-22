@@ -23,7 +23,9 @@ First, you shold download the dataset from our [link](https://github.com/glnmzx8
 
 You can reproduce the results of our classification model by running the [file](https://github.com/glnmzx888/MR2KG_SO/blob/main/code/model/run_sun.sh). 
 
-You can reproduce the best answer generaotr by running the [file](https://github.com/glnmzx888/MR2KG_SO/blob/main/demo/BestAnswer.py). Meanwhile, we provide the demo for our best answer generator in the [file](https://github.com/glnmzx888/MR2KG_SO/blob/main/demo/SO_best_answer_generator.mp4)
+You can reproduce the best answer generaotr by running the [file](https://github.com/glnmzx888/MR2KG_SO/blob/main/demo/BestAnswer.py). 
+
+Meanwhile, we provide the demo for our best answer generator in the [file](https://github.com/glnmzx888/MR2KG_SO/blob/main/demo/SO_best_answer_generator.mp4)
 
 # Reference
 If you use this code or BTLink, please consider citing us.
