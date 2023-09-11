@@ -1,0 +1,7 @@
+This part provides the used dataset in our study. 
+
+The file Processed_edage_rationale.csv presents the labeled rationales samples in the coupling and completeness knowledge, which is used for training our classification model.
+
+The file Processed_hierarchy.csv presents the labeled categories of knowledge in the associated answers.
+
+Furthermore, the file test_query_list.txt presents our 100 studied Java questions. 
